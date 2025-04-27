@@ -1,164 +1,122 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  
-  const navigate = useNavigate();
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when field is edited
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
+  const { signUp } = useAuth();
+
+  const validatePassword = (password: string) => {
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    return hasMinLength && hasUpperCase && hasNumber;
   };
-  
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Nome completo é obrigatório';
-    }
-    
-    if (!formData.email) {
-      newErrors.email = 'Email é obrigatório';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'A senha deve ter pelo menos 6 caracteres';
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'As senhas não coincidem';
-    }
-    
-    if (!acceptTerms) {
-      newErrors.terms = 'Você deve aceitar os termos de uso';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!acceptTerms) {
+      toast.error('Você deve aceitar os termos de uso');
       return;
     }
-    
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('As senhas não correspondem');
+      return;
+    }
+
+    if (!validatePassword(formData.password)) {
+      toast.error('A senha deve ter pelo menos 8 caracteres, uma letra maiúscula e um número');
+      return;
+    }
+
     setIsLoading(true);
-    
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success('Conta criada com sucesso!');
-      navigate('/login');
-    } catch (error) {
-      toast.error('Erro ao criar conta');
+      await signUp(formData.email, formData.password, formData.fullName);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Nome Completo</Label>
+        <Label htmlFor="fullName">Nome Completo</Label>
         <Input
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
+          id="fullName"
+          required
           placeholder="Seu nome completo"
-          className={errors.name ? 'border-red-500' : ''}
+          value={formData.fullName}
+          onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
         />
-        {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
-          name="email"
           type="email"
-          value={formData.email}
-          onChange={handleChange}
+          required
           placeholder="seu@email.com"
-          className={errors.email ? 'border-red-500' : ''}
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
         />
-        {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="password">Senha</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="••••••••"
-          className={errors.password ? 'border-red-500' : ''}
-        />
-        {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            required
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirme a Senha</Label>
         <Input
           id="confirmPassword"
-          name="confirmPassword"
           type="password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
+          required
           placeholder="••••••••"
-          className={errors.confirmPassword ? 'border-red-500' : ''}
+          value={formData.confirmPassword}
+          onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
         />
-        {errors.confirmPassword && (
-          <p className="text-xs text-red-500">{errors.confirmPassword}</p>
-        )}
       </div>
-      
+
       <div className="flex items-start space-x-2">
         <Checkbox
           id="terms"
           checked={acceptTerms}
-          onCheckedChange={(checked) => {
-            setAcceptTerms(checked as boolean);
-            if (checked && errors.terms) {
-              setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors.terms;
-                return newErrors;
-              });
-            }
-          }}
+          onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
         />
         <label
           htmlFor="terms"
@@ -174,17 +132,16 @@ const SignupForm = () => {
           </a>
         </label>
       </div>
-      {errors.terms && <p className="text-xs text-red-500">{errors.terms}</p>}
-      
-      <Button type="submit" className="w-full" disabled={isLoading}>
+
+      <Button type="submit" className="w-full" disabled={isLoading || !acceptTerms}>
         {isLoading ? 'Criando conta...' : 'Criar conta'}
       </Button>
-      
+
       <p className="text-sm text-center text-gray-500">
         Já tem uma conta?{' '}
-        <a href="/login" className="text-primary hover:underline">
+        <Link to="/login" className="text-primary hover:underline">
           Fazer login
-        </a>
+        </Link>
       </p>
     </form>
   );
