@@ -44,18 +44,31 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       setIsLoading(true);
       
-      // Fetch user's subscription plan
-      const { data: subscriptionData, error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .select('plan')
+      // Fetch user's subscription plan from user_plans table
+      const { data: userPlanData, error: userPlanError } = await supabase
+        .from('user_plans')
+        .select('plan_type')
         .eq('user_id', user.id)
         .single();
 
-      if (subscriptionError) throw subscriptionError;
-      
-      // Set the user's plan
-      if (subscriptionData) {
-        setPlan(subscriptionData.plan as SubscriptionPlan);
+      if (userPlanError && userPlanError.code !== 'PGRST116') {
+        // PGRST116 is "No rows returned" which just means the user doesn't have a plan yet
+        console.error('Error fetching user plan:', userPlanError);
+        
+        // If no plan exists, create a default 'free' plan for the user
+        if (userPlanError.code === 'PGRST116') {
+          const { error: insertError } = await supabase
+            .from('user_plans')
+            .insert({ user_id: user.id, plan_type: 'free' });
+            
+          if (insertError) throw insertError;
+          setPlan('free');
+        } else {
+          throw userPlanError;
+        }
+      } else if (userPlanData) {
+        // Set the user's plan based on plan_type from user_plans
+        setPlan(userPlanData.plan_type as SubscriptionPlan);
       }
 
       // Count user's leads
@@ -85,10 +98,10 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       toast.info('Iniciando processo de upgrade para o plano PRO...');
       
-      // For demo purposes, we'll just update the subscription in the database
+      // Update the user's plan in the user_plans table
       const { error } = await supabase
-        .from('subscriptions')
-        .update({ plan: 'pro' })
+        .from('user_plans')
+        .update({ plan_type: 'pro' })
         .eq('user_id', user.id);
       
       if (error) throw error;
