@@ -1,15 +1,17 @@
-
 import React from 'react';
 import MainLayout from '@/components/Layout/MainLayout';
 import PerformanceChart from '@/components/Dashboard/PerformanceChart';
+import SubscriptionCard from '@/components/Dashboard/SubscriptionCard';
 import { performanceMetrics } from '../data/MockData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 const Dashboard = () => {
   const { totalLeads, newLeadsThisWeek, negotiationStage, closedDeals, totalRevenue } = performanceMetrics;
+  const { leadsCount, leadsLimit, isProUser } = useSubscription();
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -41,11 +43,16 @@ const Dashboard = () => {
           </Link>
         </Button>
       </div>
+
+      {/* Lead Usage Card */}
+      <div className="mb-8">
+        <SubscriptionCard />
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <MetricCard
           title="Total de Leads"
-          value={totalLeads}
+          value={`${leadsCount}/${leadsLimit}`}
           color="blue"
         />
         <MetricCard
@@ -64,6 +71,8 @@ const Dashboard = () => {
           color="purple"
         />
       </div>
+      
+      
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <Card>

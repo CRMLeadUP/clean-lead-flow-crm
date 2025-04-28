@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface LeadFormProps {
   onSubmit: (data: any) => void;
@@ -22,6 +25,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { leadsCount, leadsLimit, plan } = useSubscription();
+  const isAtLimit = plan === 'free' && leadsCount >= leadsLimit;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -71,6 +76,12 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check subscription limits
+    if (isAtLimit) {
+      toast.error(`Você atingiu o limite de ${leadsLimit} leads do plano ${plan === 'free' ? 'Gratuito' : 'PRO'}.`);
+      return;
+    }
+    
     if (validateForm()) {
       onSubmit({
         ...formData,
@@ -81,6 +92,18 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {isAtLimit && (
+        <div className="bg-amber-50 border border-amber-200 p-3 rounded-md mb-4">
+          <p className="text-amber-800 text-sm font-medium">Limite de leads atingido</p>
+          <p className="text-amber-700 text-xs mt-1">
+            Você atingiu o limite de {leadsLimit} leads do seu plano atual.
+          </p>
+          <Link to="/subscription" className="text-primary text-xs font-medium block mt-2">
+            Faça upgrade para o plano PRO
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="name">Nome *</Label>
@@ -91,6 +114,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
             onChange={handleChange}
             placeholder="Nome completo"
             className={errors.name ? 'border-red-500' : ''}
+            disabled={isAtLimit}
           />
           {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
         </div>
@@ -104,6 +128,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
             onChange={handleChange}
             placeholder="Nome da empresa"
             className={errors.company ? 'border-red-500' : ''}
+            disabled={isAtLimit}
           />
           {errors.company && <p className="text-red-500 text-xs">{errors.company}</p>}
         </div>
@@ -118,6 +143,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
             onChange={handleChange}
             placeholder="email@exemplo.com"
             className={errors.email ? 'border-red-500' : ''}
+            disabled={isAtLimit}
           />
           {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
         </div>
@@ -131,6 +157,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
             onChange={handleChange}
             placeholder="(00) 00000-0000"
             className={errors.phone ? 'border-red-500' : ''}
+            disabled={isAtLimit}
           />
           {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
         </div>
@@ -147,6 +174,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
             min="0"
             step="0.01"
             className={errors.expectedRevenue ? 'border-red-500' : ''}
+            disabled={isAtLimit}
           />
           {errors.expectedRevenue && <p className="text-red-500 text-xs">{errors.expectedRevenue}</p>}
         </div>
@@ -161,6 +189,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
           onChange={handleChange}
           placeholder="Adicione notas ou observações sobre este lead"
           rows={3}
+          disabled={isAtLimit}
         />
       </div>
       
@@ -168,7 +197,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit, onCancel, initialData }) 
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button type="submit">
+        <Button type="submit" disabled={isAtLimit}>
           Salvar Lead
         </Button>
       </div>
