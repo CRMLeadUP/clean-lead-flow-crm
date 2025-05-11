@@ -15,7 +15,8 @@ const PricingCard = ({
   buttonVariant = "default", 
   current = false,
   popular = false,
-  onButtonClick
+  onButtonClick,
+  disabled = false
 }: { 
   title: string, 
   price: string, 
@@ -25,7 +26,8 @@ const PricingCard = ({
   buttonVariant?: "default" | "outline", 
   current?: boolean,
   popular?: boolean,
-  onButtonClick: () => void
+  onButtonClick: () => void,
+  disabled?: boolean
 }) => (
   <Card className={`relative overflow-hidden ${current ? 'border-primary border-2' : ''} ${popular ? 'shadow-lg' : 'shadow-sm'}`}>
     {popular && (
@@ -63,7 +65,7 @@ const PricingCard = ({
         variant={buttonVariant} 
         className="w-full" 
         onClick={onButtonClick}
-        disabled={current}
+        disabled={current || disabled}
       >
         {buttonText}
       </Button>
@@ -83,6 +85,7 @@ const Subscription = () => {
 
   const isFree = plan === 'free';
   const isPro = plan === 'pro';
+  const isAdvanced = plan === 'advanced';
 
   return (
     <MainLayout>
@@ -103,10 +106,11 @@ const Subscription = () => {
             "Dashboard básico",
             "Suporte por email"
           ]}
-          buttonText="Plano Atual"
-          buttonVariant="outline"
+          buttonText={isFree ? "Plano Atual" : "Fazer Downgrade"}
+          buttonVariant={isFree ? "outline" : "default"}
           current={isFree}
-          onButtonClick={() => {}}
+          onButtonClick={() => upgradeSubscription('free')}
+          disabled={isFree}
         />
         
         <PricingCard
@@ -125,7 +129,8 @@ const Subscription = () => {
           buttonText={isPro ? "Plano Atual" : "Fazer Upgrade"}
           current={isPro}
           popular={true}
-          onButtonClick={upgradeSubscription}
+          onButtonClick={() => upgradeSubscription('pro')}
+          disabled={isPro}
         />
         
         <PricingCard
@@ -142,9 +147,11 @@ const Subscription = () => {
             "Importação/exportação de dados",
             "Suporte dedicado"
           ]}
-          buttonText="Em breve"
-          buttonVariant="outline"
-          onButtonClick={() => {}}
+          buttonText={isAdvanced ? "Plano Atual" : "Fazer Upgrade"}
+          buttonVariant={isAdvanced ? "outline" : "default"}
+          current={isAdvanced}
+          onButtonClick={() => upgradeSubscription('advanced')}
+          disabled={isAdvanced}
         />
       </div>
       
@@ -158,7 +165,7 @@ const Subscription = () => {
           
           <div>
             <h3 className="font-medium">Como faço para mudar meu plano?</h3>
-            <p className="text-gray-600">Você pode fazer upgrade a qualquer momento nesta página. Para fazer downgrade, entre em contato com nosso suporte.</p>
+            <p className="text-gray-600">Você pode fazer upgrade a qualquer momento nesta página. Para fazer downgrade, escolha um plano com menor capacidade.</p>
           </div>
           
           <div>

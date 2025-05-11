@@ -14,7 +14,7 @@ interface SubscriptionContextType {
   isProUser: boolean;
   usagePercentage: number;
   refreshSubscriptionData: () => Promise<void>;
-  upgradeSubscription: () => Promise<void>;
+  upgradeSubscription: (planType: SubscriptionPlan) => Promise<void>;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -22,7 +22,7 @@ const SubscriptionContext = createContext<SubscriptionContextType | undefined>(u
 const planLimits = {
   free: 10,
   pro: 300,
-  advanced: 1000, // Placeholder for future implementation
+  advanced: 1000,
 };
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -91,23 +91,23 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     await fetchSubscriptionData();
   };
 
-  // This would integrate with a payment gateway in a real implementation
-  const upgradeSubscription = async () => {
+  // Modificamos para permitir upgrade para qualquer plano
+  const upgradeSubscription = async (planType: SubscriptionPlan = 'pro') => {
     if (!user) return;
     
     try {
-      toast.info('Iniciando processo de upgrade para o plano PRO...');
+      toast.info(`Iniciando processo de upgrade para o plano ${planType.toUpperCase()}...`);
       
       // Update the user's plan in the user_plans table
       const { error } = await supabase
         .from('user_plans')
-        .update({ plan_type: 'pro' })
+        .update({ plan_type: planType })
         .eq('user_id', user.id);
       
       if (error) throw error;
       
       await refreshSubscriptionData();
-      toast.success('Parabéns! Você agora é um usuário PRO!');
+      toast.success(`Parabéns! Você agora é um usuário ${planType.toUpperCase()}!`);
     } catch (error: any) {
       console.error('Error upgrading subscription:', error.message);
       toast.error('Erro ao realizar upgrade. Tente novamente.');

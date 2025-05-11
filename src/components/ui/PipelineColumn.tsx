@@ -60,12 +60,31 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
     }
   };
 
+  // Classe CSS para destacar quando um item é arrastado sobre esta coluna
+  const getDropTargetClass = (e: React.DragEvent<HTMLDivElement>) => {
+    e.currentTarget.classList.add('ring-2', 'ring-primary', 'ring-opacity-50', 'bg-primary/5');
+  };
+
+  // Classe CSS para remover o destaque quando um item deixa esta coluna
+  const removeDropTargetClass = (e: React.DragEvent<HTMLDivElement>) => {
+    e.currentTarget.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50', 'bg-primary/5');
+  };
+
   return (
     <div 
-      className={`pipeline-column ${getBackgroundColor()} rounded-lg p-4 min-w-[280px] w-full transition-colors duration-200 border-t-4 ${getBorderColor()} shadow-sm`}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={(e) => onDrop(e, stageId)}
+      className={`pipeline-column ${getBackgroundColor()} rounded-lg p-4 min-w-[280px] w-full transition-colors duration-200 border-t-4 ${getBorderColor()} shadow-sm relative`}
+      onDragOver={(e) => {
+        onDragOver(e);
+        getDropTargetClass(e);
+      }}
+      onDragLeave={(e) => {
+        onDragLeave(e);
+        removeDropTargetClass(e);
+      }}
+      onDrop={(e) => {
+        onDrop(e, stageId);
+        removeDropTargetClass(e);
+      }}
       data-stage-id={stageId}
     >
       <StageHeader 
