@@ -14,6 +14,7 @@ const PricingCard = ({
   buttonText, 
   buttonVariant = "default", 
   current = false,
+  popular = false,
   onButtonClick
 }: { 
   title: string, 
@@ -23,15 +24,21 @@ const PricingCard = ({
   buttonText: string, 
   buttonVariant?: "default" | "outline", 
   current?: boolean,
+  popular?: boolean,
   onButtonClick: () => void
 }) => (
-  <Card className={`relative overflow-hidden ${current ? 'border-primary border-2' : ''}`}>
+  <Card className={`relative overflow-hidden ${current ? 'border-primary border-2' : ''} ${popular ? 'shadow-lg' : 'shadow-sm'}`}>
+    {popular && (
+      <div className="bg-primary text-primary-foreground text-xs font-medium py-1 absolute top-0 left-0 right-0 text-center">
+        MAIS POPULAR
+      </div>
+    )}
     {current && (
       <div className="bg-primary text-primary-foreground text-xs py-1 px-3 absolute -right-8 top-6 rotate-45 w-32 text-center">
         Atual
       </div>
     )}
-    <CardHeader>
+    <CardHeader className={`${popular ? 'pt-8' : ''}`}>
       <div className="flex justify-between items-start">
         <div>
           <CardTitle>{title}</CardTitle>
@@ -47,7 +54,7 @@ const PricingCard = ({
       <ul className="space-y-2 mb-6">
         {features.map((feature, i) => (
           <li key={i} className="flex items-center gap-2">
-            <Check size={18} className="text-green-600" />
+            <Check size={18} className="text-green-600 flex-shrink-0" />
             <span>{feature}</span>
           </li>
         ))}
@@ -92,7 +99,9 @@ const Subscription = () => {
           features={[
             "Até 10 leads",
             "Gerenciamento de funil básico",
-            "1 usuário"
+            "1 usuário",
+            "Dashboard básico",
+            "Suporte por email"
           ]}
           buttonText="Plano Atual"
           buttonVariant="outline"
@@ -107,11 +116,15 @@ const Subscription = () => {
           features={[
             "Até 300 leads",
             "Gerenciamento de funil avançado",
+            "5 usuários",
+            "Etapas de funil personalizáveis",
             "Integração com WhatsApp",
-            "Relatórios básicos"
+            "Relatórios avançados",
+            "Suporte prioritário"
           ]}
           buttonText={isPro ? "Plano Atual" : "Fazer Upgrade"}
           current={isPro}
+          popular={true}
           onButtonClick={upgradeSubscription}
         />
         
@@ -122,10 +135,12 @@ const Subscription = () => {
           features={[
             "Leads ilimitados",
             "Gerenciamento de funil completo",
-            "Integrações avançadas",
+            "Usuários ilimitados",
+            "Integrações com APIs externas",
             "Relatórios personalizados",
             "API de acesso",
-            "Suporte prioritário"
+            "Importação/exportação de dados",
+            "Suporte dedicado"
           ]}
           buttonText="Em breve"
           buttonVariant="outline"

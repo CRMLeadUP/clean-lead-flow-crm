@@ -12,7 +12,7 @@ const Index = () => {
             <img 
               src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
               alt="LeadUP" 
-              className="h-8"
+              className="h-12" // Aumentamos o tamanho da logo
             />
           </div>
           <div className="flex gap-4 items-center">
@@ -82,10 +82,178 @@ const Index = () => {
         </div>
       </section>
       
+      {/* Pricing Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-4">Planos que se adaptam ao seu negócio</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Escolha o plano ideal para suas necessidades e comece a gerenciar seus leads com eficiência.
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Plano Grátis */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 flex flex-col">
+              <div className="p-6 bg-gray-50">
+                <h3 className="text-xl font-bold">Plano Grátis</h3>
+                <div className="mt-4">
+                  <span className="text-3xl font-bold">R$ 0</span>
+                  <span className="text-gray-500">/mês</span>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">Para começar a gerenciar leads</p>
+              </div>
+              
+              <div className="p-6 flex-1 flex flex-col">
+                <ul className="space-y-3 mb-6 flex-1">
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Até 10 leads</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Dashboard básico</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Funil de vendas básico</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>1 usuário</span>
+                  </li>
+                </ul>
+                
+                <Button asChild className="w-full">
+                  <Link to="/signup">Começar Grátis</Link>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Plano PRO */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-primary flex flex-col transform scale-105">
+              <div className="p-1 bg-primary text-white text-center text-sm font-medium">
+                MAIS POPULAR
+              </div>
+              <div className="p-6 bg-gray-50">
+                <h3 className="text-xl font-bold">Plano PRO</h3>
+                <div className="mt-4">
+                  <span className="text-3xl font-bold">R$ 19,90</span>
+                  <span className="text-gray-500">/mês</span>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">Para profissionais e pequenas equipes</p>
+              </div>
+              
+              <div className="p-6 flex-1 flex flex-col">
+                <ul className="space-y-3 mb-6 flex-1">
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span><strong>Até 300 leads</strong></span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Etapas de funil personalizáveis</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Integração com WhatsApp</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Relatórios avançados</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>5 usuários</span>
+                  </li>
+                </ul>
+                
+                <Button asChild className="w-full">
+                  <Link to="/signup?plan=pro">Assinar PRO</Link>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Plano Avançado */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 flex flex-col">
+              <div className="p-6 bg-gray-50">
+                <h3 className="text-xl font-bold">Plano Avançado</h3>
+                <div className="mt-4">
+                  <span className="text-3xl font-bold">R$ 49,90</span>
+                  <span className="text-gray-500">/mês</span>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">Para equipes maiores e empresas</p>
+              </div>
+              
+              <div className="p-6 flex-1 flex flex-col">
+                <ul className="space-y-3 mb-6 flex-1">
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span><strong>Leads ilimitados</strong></span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Funil de vendas totalmente personalizado</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Integrações com API externas</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Relatórios personalizados</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Usuários ilimitados</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Suporte prioritário</span>
+                  </li>
+                </ul>
+                
+                <Button asChild variant="outline" className="w-full">
+                  <Link to="/signup?plan=advanced">Assinar Avançado</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       {/* Footer */}
       <footer className="bg-white py-8 border-t border-gray-100">
         <div className="container mx-auto px-4 text-center text-gray-500">
-          <p>&copy; 2025 Clean CRM. Todos os direitos reservados.</p>
+          <p>&copy; 2025 LeadUP. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>
