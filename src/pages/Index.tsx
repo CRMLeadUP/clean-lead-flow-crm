@@ -8,7 +8,13 @@ const Index = () => {
       {/* Navigation */}
       <header className="bg-white border-b border-gray-100 py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="text-xl font-semibold text-primary">Clean CRM</div>
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
+              alt="LeadUP" 
+              className="h-8"
+            />
+          </div>
           <div className="flex gap-4 items-center">
             <Link to="/login" className="text-sm text-gray-600 hover:text-primary">Login</Link>
             <Button asChild>

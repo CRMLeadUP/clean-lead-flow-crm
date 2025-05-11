@@ -11,10 +11,13 @@ interface PipelineColumnProps {
   stageColor: string;
   leads: any[];
   onDragStart: (e: React.DragEvent<HTMLDivElement>, leadId: number) => void;
+  onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void;
   onAddLeadClick: (stageId: string) => void;
   count: number;
+  isLoading?: boolean;
 }
 
 const PipelineColumn: React.FC<PipelineColumnProps> = ({
@@ -23,16 +26,21 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
   stageColor,
   leads,
   onDragStart,
+  onDragEnd,
   onDragOver,
+  onDragLeave,
   onDrop,
   onAddLeadClick,
-  count
+  count,
+  isLoading = false
 }) => {
   return (
     <div 
-      className={`pipeline-column bg-${stageColor} rounded-lg p-3 min-w-[280px] w-full`}
+      className={`pipeline-column bg-${stageColor} rounded-lg p-3 min-w-[280px] w-full transition-colors duration-200`}
       onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
       onDrop={(e) => onDrop(e, stageId)}
+      data-stage-id={stageId}
     >
       <StageHeader 
         name={stageName} 
@@ -41,7 +49,12 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
       />
       
       <div className="mt-3 space-y-3">
-        {leads.length === 0 ? (
+        {isLoading ? (
+          <div className="animate-pulse flex flex-col space-y-3">
+            <div className="h-32 bg-white/50 rounded-lg"></div>
+            <div className="h-32 bg-white/50 rounded-lg"></div>
+          </div>
+        ) : leads.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 border border-dashed border-gray-300 rounded-lg bg-white/50">
             <p className="text-sm text-gray-500 mb-2">Nenhum lead neste estágio</p>
             <Button 
@@ -60,6 +73,7 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
               key={lead.id} 
               lead={lead}
               onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
             />
           ))
         )}

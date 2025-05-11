@@ -66,8 +66,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-center h-16 border-b border-gray-100">
-            <Link to="/dashboard" className="text-xl font-bold text-primary">
-              LeadUP
+            <Link to="/dashboard" className="flex items-center justify-center">
+              <img 
+                src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
+                alt="LeadUP" 
+                className="h-8" 
+              />
             </Link>
           </div>
           

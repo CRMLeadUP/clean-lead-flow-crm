@@ -23,9 +23,10 @@ interface LeadCardProps {
     lastContact: string;
   };
   onDragStart: (e: React.DragEvent<HTMLDivElement>, leadId: number) => void;
+  onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
-const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart }) => {
+const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => {
   const formattedRevenue = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
@@ -38,9 +39,10 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart }) => {
 
   return (
     <div
-      className="lead-card"
-      draggable
+      className="lead-card bg-white p-4 rounded-lg shadow-sm border border-gray-100 cursor-move transition-all duration-200 hover:shadow-md hover:border-primary/30"
+      draggable={true}
       onDragStart={(e) => onDragStart(e, lead.id)}
+      onDragEnd={onDragEnd}
     >
       <div className="flex justify-between items-start mb-2">
         <div>
