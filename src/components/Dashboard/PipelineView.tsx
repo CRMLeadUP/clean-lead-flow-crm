@@ -15,6 +15,8 @@ import {
   DropdownMenuCheckboxItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import TaskForm from '@/components/Dashboard/TaskForm';
 
 const PipelineView = () => {
   // Starting with empty leads array
@@ -37,7 +39,9 @@ const PipelineView = () => {
     handleAddLead,
     handleCreateTaskClick,
     handleCreateTask,
-    TaskDialog 
+    showTaskDialog,
+    setShowTaskDialog,
+    getTaskDialogComponent
   } = useLeadManagement(
     leads, 
     setLeads, 
@@ -47,6 +51,8 @@ const PipelineView = () => {
     leadsCount, 
     leadsLimit
   );
+
+  const taskDialogProps = getTaskDialogComponent();
 
   const { 
     handleDragStart, 
@@ -164,7 +170,19 @@ const PipelineView = () => {
         onOpenChange={setShowEditStageDialog}
       />
       
-      <TaskDialog />
+      {/* Task Dialog */}
+      <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Criar Nova Tarefa</DialogTitle>
+          </DialogHeader>
+          <TaskForm
+            onSubmit={handleCreateTask}
+            onCancel={() => setShowTaskDialog(false)}
+            leadName={taskDialogProps.currentLead?.name}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

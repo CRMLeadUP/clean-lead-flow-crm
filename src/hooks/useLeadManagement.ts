@@ -2,8 +2,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import TaskForm from '@/components/Dashboard/TaskForm';
 
 export const useLeadManagement = (
   leads: any[], 
@@ -112,23 +110,9 @@ export const useLeadManagement = (
     };
   };
 
-  const TaskDialog = () => {
-    if (!showTaskDialog) return null;
-    
-    return (
-      <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Criar Nova Tarefa</DialogTitle>
-          </DialogHeader>
-          <TaskForm
-            onSubmit={handleCreateTask}
-            onCancel={() => setShowTaskDialog(false)}
-            leadName={currentLead?.name}
-          />
-        </DialogContent>
-      </Dialog>
-    );
+  // Instead of directly returning JSX, return a function that renders the component
+  const getTaskDialogComponent = () => {
+    return { showTaskDialog, setShowTaskDialog, currentLead };
   };
 
   return {
@@ -143,6 +127,6 @@ export const useLeadManagement = (
     setIsLoading,
     showTaskDialog,
     setShowTaskDialog,
-    TaskDialog
+    getTaskDialogComponent
   };
 };
