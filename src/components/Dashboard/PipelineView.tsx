@@ -110,7 +110,7 @@ const PipelineView = () => {
               checked={activeFilters.highValue}
               onCheckedChange={() => handleFilterChange('highValue')}
             >
-              Alto valor (>R$5.000)
+              Alto valor ({'>'}R$5.000)
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={activeFilters.recent}
@@ -122,7 +122,7 @@ const PipelineView = () => {
               checked={activeFilters.noActivity}
               onCheckedChange={() => handleFilterChange('noActivity')}
             >
-              Sem atividade (>14 dias)
+              Sem atividade ({'>'}14 dias)
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
