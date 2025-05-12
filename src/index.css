@@ -80,13 +80,13 @@
 }
 
 .pipeline-column {
-  min-height: 500px;
-  max-height: 80vh;
+  min-height: 400px;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
 }
 
 .lead-card {
-  @apply bg-white rounded-lg shadow-sm p-4 mb-3 border border-gray-100 hover:shadow-md transition-shadow;
+  @apply bg-white rounded-md shadow-sm border border-gray-100 hover:shadow-md transition-shadow;
 }
 
 .dragging {

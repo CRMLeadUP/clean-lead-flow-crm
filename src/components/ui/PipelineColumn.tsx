@@ -72,7 +72,7 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
 
   return (
     <div 
-      className={`pipeline-column ${getBackgroundColor()} rounded-lg p-4 min-w-[280px] w-full transition-colors duration-200 border-t-4 ${getBorderColor()} shadow-sm relative`}
+      className={`pipeline-column ${getBackgroundColor()} rounded-lg p-2 min-w-[220px] w-full max-w-[220px] transition-colors duration-200 border-t-4 ${getBorderColor()} shadow-sm relative`}
       onDragOver={(e) => {
         onDragOver(e);
         getDropTargetClass(e);
@@ -93,23 +93,23 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
         onAddClick={() => onAddLeadClick(stageId)} 
       />
       
-      <div className="mt-4 space-y-4">
+      <div className="mt-2 space-y-2">
         {isLoading ? (
-          <div className="animate-pulse flex flex-col space-y-4">
-            <div className="h-32 bg-white/50 rounded-lg"></div>
-            <div className="h-32 bg-white/50 rounded-lg"></div>
+          <div className="animate-pulse flex flex-col space-y-2">
+            <div className="h-24 bg-white/50 rounded-lg"></div>
+            <div className="h-24 bg-white/50 rounded-lg"></div>
           </div>
         ) : leads.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 border border-dashed border-gray-300 rounded-lg bg-white/70">
-            <p className="text-sm text-gray-500 mb-2">Nenhum lead neste estágio</p>
+          <div className="flex flex-col items-center justify-center h-24 border border-dashed border-gray-300 rounded-lg bg-white/70">
+            <p className="text-xs text-gray-500 mb-1">Sem leads</p>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex items-center text-primary"
+              className="flex items-center text-primary h-7 text-xs"
               onClick={() => onAddLeadClick(stageId)}
             >
-              <PlusCircle size={16} className="mr-1" />
-              Adicionar Lead
+              <PlusCircle size={14} className="mr-1" />
+              Adicionar
             </Button>
           </div>
         ) : (

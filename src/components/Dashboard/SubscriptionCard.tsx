@@ -23,15 +23,19 @@ export const SubscriptionCard = () => {
     }).format(value);
   };
 
+  const handleUpgradeClick = () => {
+    upgradeSubscription('pro');
+  };
+
   return (
     <Card>
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="text-lg font-medium">Seu Plano: <span className="font-bold text-primary">{plan === 'free' ? 'Gratuito' : 'PRO'}</span></h3>
+            <h3 className="text-lg font-medium">Seu Plano: <span className="font-bold text-primary">{plan === 'free' ? 'Gratuito' : plan === 'pro' ? 'PRO' : 'Avançado'}</span></h3>
             <p className="text-sm text-gray-500">
               {isProUser 
-                ? 'Aproveite todos os benefícios do plano PRO!' 
+                ? 'Aproveite todos os benefícios do seu plano!' 
                 : 'Faça upgrade para obter mais recursos.'}
             </p>
           </div>
@@ -79,7 +83,7 @@ export const SubscriptionCard = () => {
               
               <div className="pt-2">
                 <div className="text-xl font-bold">{formatCurrency(19.90)}<span className="text-sm font-normal">/mês</span></div>
-                <Button onClick={upgradeSubscription} className="w-full mt-2">
+                <Button onClick={handleUpgradeClick} className="w-full mt-2">
                   Fazer Upgrade
                 </Button>
               </div>

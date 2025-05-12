@@ -144,6 +144,7 @@ const Subscription = () => {
             "Integrações com APIs externas",
             "Relatórios personalizados",
             "API de acesso",
+            "Integração com WhatsApp Empresarial",
             "Importação/exportação de dados",
             "Suporte dedicado"
           ]}

@@ -8,7 +8,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
-            <h1 className="text-4xl font-bold text-primary">Clean CRM</h1>
+            <h1 className="text-4xl font-bold text-primary">LeadUP</h1>
           </Link>
           <h2 className="mt-2 text-2xl font-semibold text-gray-800">Bem-vindo(a) de volta</h2>
           <p className="mt-1 text-gray-500">Entre em sua conta para continuar</p>

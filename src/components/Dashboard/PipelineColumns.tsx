@@ -25,7 +25,7 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
   isLoading
 }) => {
   return (
-    <div className="flex space-x-4 p-1 min-w-max">
+    <div className="flex space-x-2 p-1 min-w-max">
       {pipelineStages.map((stage) => {
         const stageLeads = leads.filter(lead => lead.stage === stage.id);
         

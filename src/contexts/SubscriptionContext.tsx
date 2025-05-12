@@ -14,7 +14,7 @@ interface SubscriptionContextType {
   isProUser: boolean;
   usagePercentage: number;
   refreshSubscriptionData: () => Promise<void>;
-  upgradeSubscription: (planType: SubscriptionPlan) => Promise<void>;
+  upgradeSubscription: (planType?: SubscriptionPlan) => Promise<void>;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -91,7 +91,6 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     await fetchSubscriptionData();
   };
 
-  // Modificamos para permitir upgrade para qualquer plano
   const upgradeSubscription = async (planType: SubscriptionPlan = 'pro') => {
     if (!user) return;
     
@@ -105,6 +104,9 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
         .eq('user_id', user.id);
       
       if (error) throw error;
+      
+      // Set the plan immediately to update UI
+      setPlan(planType);
       
       await refreshSubscriptionData();
       toast.success(`Parabéns! Você agora é um usuário ${planType.toUpperCase()}!`);

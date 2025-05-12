@@ -35,17 +35,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR').format(date);
-  };
-
-  // Function to generate initials from name
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date);
   };
 
   // Generate a consistent color based on the lead name
@@ -64,78 +54,70 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
 
   return (
     <div
-      className="lead-card bg-white rounded-lg shadow-sm border border-gray-200 cursor-move transition-all duration-200 hover:shadow-md hover:border-primary/20"
+      className="lead-card bg-white rounded-md shadow-sm border border-gray-200 cursor-move transition-all duration-200 hover:shadow-md hover:border-primary/20 p-2"
       draggable={true}
       onDragStart={(e) => onDragStart(e, lead.id)}
       onDragEnd={onDragEnd}
     >
-      <div className="flex items-start gap-3 p-4">
-        {/* Avatar circle with initials */}
-        <div className={`flex-shrink-0 w-10 h-10 rounded-full ${avatarColor} text-white flex items-center justify-center font-medium text-sm`}>
-          {getInitials(lead.name)}
-        </div>
+      <div className="flex items-start gap-2">
+        {/* Color indicator */}
+        <div className={`flex-shrink-0 w-1 h-full rounded-full ${avatarColor}`}></div>
         
         <div className="flex-1">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="font-semibold text-gray-900">{lead.name}</h3>
-              <div className="flex items-center text-sm text-gray-500 mt-1">
-                <Building size={14} className="mr-1" />
-                <span>{lead.company}</span>
+              <h3 className="font-medium text-sm text-gray-900">{lead.name}</h3>
+              <div className="flex items-center text-xs text-gray-500">
+                <Building size={12} className="mr-1" />
+                <span className="truncate max-w-[120px]">{lead.company}</span>
               </div>
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 -mt-1 -mr-1">
+                  <MoreHorizontal className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuLabel className="text-xs">Ações</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Mail className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="text-xs">
+                  <Mail className="mr-1 h-3 w-3" />
                   <span>Enviar email</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Phone className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="text-xs">
+                  <Phone className="mr-1 h-3 w-3" />
                   <span>Ligar</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Editar lead</DropdownMenuItem>
+                <DropdownMenuItem className="text-xs">Editar lead</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">Excluir</DropdownMenuItem>
+                <DropdownMenuItem className="text-xs text-red-600">Excluir</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <div className="flex items-center text-sm">
-              <DollarSign size={14} className="text-green-600 mr-1" />
+          <div className="flex justify-between items-center mt-2 text-xs">
+            <div className="flex items-center">
+              <DollarSign size={12} className="text-green-600 mr-1" />
               <span className="font-medium">{formattedRevenue}</span>
             </div>
-            <div className="flex items-center text-sm">
-              <Calendar size={14} className="text-blue-600 mr-1" />
+            <div className="flex items-center">
+              <Calendar size={12} className="text-blue-600 mr-1" />
               <span>{formatDate(lead.lastContact)}</span>
             </div>
           </div>
           
-          {lead.notes && (
-            <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700 border-l-2 border-gray-300">
-              {lead.notes}
-            </div>
-          )}
-          
-          <div className="flex gap-2 mt-3 border-t pt-3 border-gray-100">
-            <Button size="sm" variant="outline" className="text-xs h-8 rounded-full">
+          <div className="flex gap-1 mt-2">
+            <Button size="sm" variant="outline" className="text-[10px] h-6 px-1 py-0 rounded">
               <Mail className="h-3 w-3 mr-1" /> Email
             </Button>
-            <Button size="sm" variant="outline" className="text-xs h-8 rounded-full">
+            <Button size="sm" variant="outline" className="text-[10px] h-6 px-1 py-0 rounded">
               <Phone className="h-3 w-3 mr-1" /> Ligar
             </Button>
             <div className="ml-auto">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                Novo contato
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 h-5 text-[10px]">
+                Novo
               </Badge>
             </div>
           </div>
