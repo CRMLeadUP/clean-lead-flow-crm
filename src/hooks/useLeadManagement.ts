@@ -44,7 +44,9 @@ export const useLeadManagement = (
         lastContact: new Date().toISOString()
       };
       
-      setLeads([...leads, newLead]);
+      // Add the lead to the leads array
+      const updatedLeads = [...leads, newLead];
+      setLeads(updatedLeads);
       setShowAddLeadDialog(false);
       
       // In a real app, this would be:
@@ -80,12 +82,19 @@ export const useLeadManagement = (
     }
   };
 
+  const handleCreateTask = (leadId: number, taskDetails: any) => {
+    toast.success('Tarefa criada com sucesso!');
+    // In a real app, this would save the task to a database
+    // and potentially set up notifications
+  };
+
   return {
     showAddLeadDialog,
     setShowAddLeadDialog,
     currentStageId,
     handleAddLeadClick,
     handleAddLead,
+    handleCreateTask,
     isLoading,
     setIsLoading
   };

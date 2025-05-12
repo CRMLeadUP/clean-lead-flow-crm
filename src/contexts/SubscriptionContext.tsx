@@ -25,6 +25,12 @@ const planLimits = {
   advanced: 1000,
 };
 
+const userLimits = {
+  free: 1,
+  pro: 5,
+  advanced: 10,
+};
+
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [plan, setPlan] = useState<SubscriptionPlan>('free');
@@ -32,6 +38,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isLoading, setIsLoading] = useState(true);
 
   const leadsLimit = planLimits[plan];
+  const userLimit = userLimits[plan];
   const isProUser = plan !== 'free';
   const usagePercentage = Math.min(Math.round((leadsCount / leadsLimit) * 100), 100);
 

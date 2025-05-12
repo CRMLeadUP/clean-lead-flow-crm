@@ -107,12 +107,13 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
                   <Phone className="mr-1 h-3 w-3" />
                   <span>Ligar</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-xs">
+                <DropdownMenuItem className="text-xs" onClick={handleWhatsAppClick}>
                   <MessageSquare className="mr-1 h-3 w-3" />
                   <span>WhatsApp</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-xs">Editar lead</DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-xs">Criar tarefa</DropdownMenuItem>
                 <DropdownMenuItem className="text-xs text-red-600">Excluir</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -136,8 +137,16 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
             <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={() => toast.success("Chamada iniciada")}>
               <Phone className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={handleWhatsAppClick}>
-              <MessageSquare className="h-3 w-3" />
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-[10px] h-5 px-1 py-0 rounded bg-green-50 text-green-600 hover:bg-green-100" 
+              onClick={handleWhatsAppClick}
+            >
+              {/* WhatsApp logo */}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3">
+                <path d="M12 2a10 10 0 0 0-8.6 14.9L2 22l5.3-1.4A10 10 0 1 0 12 2m0 1.7A8.3 8.3 0 1 1 7.6 18.6l-.2-.2-3.1.8.8-3-.2-.3a8.3 8.3 0 0 1 7-12.2M8.5 7.3a1 1 0 0 0-.7.3A2.8 2.8 0 0 0 7 9.9a5 5 0 0 0 1.1 2.6 11.3 11.3 0 0 0 4.4 3.8c2.2.8 2.6.7 3.1.6.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.1-1.3l-.3-.1-1.4-.7c-.2 0-.3 0-.5.4l-.7 1.3a.4.4 0 0 1-.4.1 9.3 9.3 0 0 1-2.8-1.7 10 10 0 0 1-2-2.4c0-.2 0-.3.1-.4l.5-.4.2-.3c.1-.2.2-.3.3-.5.1-.2 0-.5 0-.6-.1-.2-.9-2.2-1.2-3-.3-.8-.5-.8-.8-.8h-.6Z"/>
+              </svg>
             </Button>
           </div>
         </div>

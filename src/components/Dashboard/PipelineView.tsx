@@ -17,8 +17,45 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const PipelineView = () => {
-  // Starting with empty leads array instead of mock data
-  const [leads, setLeads] = useState([]);
+  // Starting with mock data for leads
+  const [leads, setLeads] = useState([
+    {
+      id: 1,
+      name: "Maria Silva",
+      company: "Techno Solutions",
+      email: "maria@techno.com",
+      phone: "11987654321",
+      expectedRevenue: 5500,
+      notes: "Interessada em nosso pacote premium",
+      stage: "new_leads",
+      createdAt: "2023-09-10T15:30:00Z",
+      lastContact: "2023-09-10T15:30:00Z"
+    },
+    {
+      id: 2,
+      name: "João Santos",
+      company: "Construções JS",
+      email: "joao@construcoes.com",
+      phone: "11912345678",
+      expectedRevenue: 3200,
+      notes: "Solicitou orçamento detalhado",
+      stage: "contacted",
+      createdAt: "2023-09-05T10:15:00Z",
+      lastContact: "2023-09-08T13:45:00Z"
+    },
+    {
+      id: 3,
+      name: "Ana Carolina",
+      company: "Design Inovador",
+      email: "ana@design.com",
+      phone: "11998765432",
+      expectedRevenue: 7800,
+      notes: "Reunião agendada para próxima semana",
+      stage: "negotiation",
+      createdAt: "2023-08-28T09:20:00Z",
+      lastContact: "2023-09-07T11:30:00Z"
+    }
+  ]);
   const { refreshSubscriptionData, leadsCount, leadsLimit, plan } = useSubscription();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);

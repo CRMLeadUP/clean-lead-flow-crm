@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Progress } from '@/components/ui/progress';
-import { Check, AlertCircle } from 'lucide-react';
+import { Check, AlertCircle, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const SubscriptionCard = () => {
   const { 
@@ -23,12 +24,21 @@ export const SubscriptionCard = () => {
     }).format(value);
   };
 
+  const getUserLimit = () => {
+    switch(plan) {
+      case 'free': return 1;
+      case 'pro': return 5;
+      case 'advanced': return 10;
+      default: return 1;
+    }
+  };
+
   const handleUpgradeClick = () => {
     upgradeSubscription('pro');
   };
 
   return (
-    <Card>
+    <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -39,10 +49,16 @@ export const SubscriptionCard = () => {
                 : 'Faça upgrade para obter mais recursos.'}
             </p>
           </div>
-          {isProUser && (
+          {isProUser ? (
             <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
               Ativo
             </div>
+          ) : (
+            <Link to="/subscription">
+              <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10">
+                Ver Planos
+              </Button>
+            </Link>
           )}
         </div>
 
@@ -61,6 +77,14 @@ export const SubscriptionCard = () => {
               </div>
             )}
           </div>
+          
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center">
+              <Users size={16} className="mr-1 text-gray-500" />
+              <span>Usuários permitidos:</span>
+            </div>
+            <span className="font-medium">{getUserLimit()}</span>
+          </div>
 
           {!isProUser && (
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3">
@@ -70,6 +94,10 @@ export const SubscriptionCard = () => {
                 <li className="flex items-center gap-2 text-sm">
                   <Check size={16} className="text-green-600" />
                   <span>Até 300 leads</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check size={16} className="text-green-600" />
+                  <span>Até 5 usuários</span>
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check size={16} className="text-green-600" />
@@ -83,9 +111,11 @@ export const SubscriptionCard = () => {
               
               <div className="pt-2">
                 <div className="text-xl font-bold">{formatCurrency(19.90)}<span className="text-sm font-normal">/mês</span></div>
-                <Button onClick={handleUpgradeClick} className="w-full mt-2">
-                  Fazer Upgrade
-                </Button>
+                <Link to="/subscription">
+                  <Button className="w-full mt-2">
+                    Fazer Upgrade
+                  </Button>
+                </Link>
               </div>
             </div>
           )}
