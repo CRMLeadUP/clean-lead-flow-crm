@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MoreHorizontal, Mail, Phone, Calendar, DollarSign, Building } from 'lucide-react';
+import { MoreHorizontal, Mail, Phone, Calendar, DollarSign, Building, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 interface LeadCardProps {
   lead: {
@@ -52,6 +53,22 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
 
   const avatarColor = getAvatarColor(lead.name);
 
+  // WhatsApp integration
+  const handleWhatsAppClick = () => {
+    // Format phone number (remove non-digits)
+    const formattedPhone = lead.phone.replace(/\D/g, '');
+    
+    // Check if phone number is valid
+    if (!formattedPhone || formattedPhone.length < 8) {
+      toast.error("Número de telefone inválido");
+      return;
+    }
+    
+    // Create WhatsApp URL
+    const whatsappUrl = `https://wa.me/${formattedPhone}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <div
       className="lead-card bg-white rounded-md shadow-sm border border-gray-200 cursor-move transition-all duration-200 hover:shadow-md hover:border-primary/20 p-2"
@@ -66,16 +83,16 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
         <div className="flex-1">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="font-medium text-sm text-gray-900">{lead.name}</h3>
+              <h3 className="font-medium text-xs text-gray-900">{lead.name}</h3>
               <div className="flex items-center text-xs text-gray-500">
-                <Building size={12} className="mr-1" />
-                <span className="truncate max-w-[120px]">{lead.company}</span>
+                <Building size={10} className="mr-1" />
+                <span className="truncate max-w-[100px] text-[10px]">{lead.company}</span>
               </div>
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 -mt-1 -mr-1">
+                <Button variant="ghost" size="sm" className="h-5 w-5 p-0 -mt-1 -mr-1">
                   <MoreHorizontal className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
@@ -90,6 +107,10 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
                   <Phone className="mr-1 h-3 w-3" />
                   <span>Ligar</span>
                 </DropdownMenuItem>
+                <DropdownMenuItem className="text-xs">
+                  <MessageSquare className="mr-1 h-3 w-3" />
+                  <span>WhatsApp</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem className="text-xs">Editar lead</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-xs text-red-600">Excluir</DropdownMenuItem>
@@ -97,29 +118,27 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
             </DropdownMenu>
           </div>
           
-          <div className="flex justify-between items-center mt-2 text-xs">
+          <div className="flex justify-between items-center mt-1 text-xs">
             <div className="flex items-center">
-              <DollarSign size={12} className="text-green-600 mr-1" />
-              <span className="font-medium">{formattedRevenue}</span>
+              <DollarSign size={10} className="text-green-600 mr-1" />
+              <span className="font-medium text-[10px]">{formattedRevenue}</span>
             </div>
             <div className="flex items-center">
-              <Calendar size={12} className="text-blue-600 mr-1" />
-              <span>{formatDate(lead.lastContact)}</span>
+              <Calendar size={10} className="text-blue-600 mr-1" />
+              <span className="text-[10px]">{formatDate(lead.lastContact)}</span>
             </div>
           </div>
           
-          <div className="flex gap-1 mt-2">
-            <Button size="sm" variant="outline" className="text-[10px] h-6 px-1 py-0 rounded">
-              <Mail className="h-3 w-3 mr-1" /> Email
+          <div className="flex gap-1 mt-1">
+            <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={() => toast.success("Email enviado")}>
+              <Mail className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="outline" className="text-[10px] h-6 px-1 py-0 rounded">
-              <Phone className="h-3 w-3 mr-1" /> Ligar
+            <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={() => toast.success("Chamada iniciada")}>
+              <Phone className="h-3 w-3" />
             </Button>
-            <div className="ml-auto">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 h-5 text-[10px]">
-                Novo
-              </Badge>
-            </div>
+            <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={handleWhatsAppClick}>
+              <MessageSquare className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       </div>

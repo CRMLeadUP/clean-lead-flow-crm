@@ -12,7 +12,7 @@ const Index = () => {
             <img 
               src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
               alt="LeadUP" 
-              className="h-12" // Aumentamos o tamanho da logo
+              className="h-20" // Increased logo size significantly
             />
           </div>
           <div className="flex gap-4 items-center">

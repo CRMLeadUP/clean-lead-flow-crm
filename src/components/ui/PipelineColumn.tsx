@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PlusCircle } from 'lucide-react';
 import LeadCard from '../Dashboard/LeadCard';
@@ -16,6 +15,7 @@ interface PipelineColumnProps {
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void;
   onAddLeadClick: (stageId: string) => void;
+  onEditStage?: () => void;
   count: number;
   isLoading?: boolean;
 }
@@ -31,10 +31,14 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
   onDragLeave,
   onDrop,
   onAddLeadClick,
+  onEditStage,
   count,
   isLoading = false
 }) => {
-  // Função para calcular a cor da borda superior baseada no stageColor
+  // Make the columns smaller and more compact
+  const columnWidth = "180px"; // Reduced from 220px
+
+  // Functions for styling (keep existing code)
   const getBorderColor = () => {
     switch(stageColor) {
       case 'blue': return 'border-t-blue-500';
@@ -47,7 +51,6 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
     }
   };
 
-  // Função para calcular a cor de fundo baseada no stageColor
   const getBackgroundColor = () => {
     switch(stageColor) {
       case 'blue': return 'bg-blue-50';
@@ -60,19 +63,19 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
     }
   };
 
-  // Classe CSS para destacar quando um item é arrastado sobre esta coluna
+  // Drag and drop functions
   const getDropTargetClass = (e: React.DragEvent<HTMLDivElement>) => {
     e.currentTarget.classList.add('ring-2', 'ring-primary', 'ring-opacity-50', 'bg-primary/5');
   };
 
-  // Classe CSS para remover o destaque quando um item deixa esta coluna
   const removeDropTargetClass = (e: React.DragEvent<HTMLDivElement>) => {
     e.currentTarget.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50', 'bg-primary/5');
   };
 
   return (
     <div 
-      className={`pipeline-column ${getBackgroundColor()} rounded-lg p-2 min-w-[220px] w-full max-w-[220px] transition-colors duration-200 border-t-4 ${getBorderColor()} shadow-sm relative`}
+      className={`pipeline-column ${getBackgroundColor()} rounded-lg p-2 min-w-[${columnWidth}] w-full max-w-[${columnWidth}] transition-colors duration-200 border-t-4 ${getBorderColor()} shadow-sm relative`}
+      style={{ minWidth: columnWidth, maxWidth: columnWidth }}
       onDragOver={(e) => {
         onDragOver(e);
         getDropTargetClass(e);
@@ -90,25 +93,26 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
       <StageHeader 
         name={stageName} 
         count={count} 
-        onAddClick={() => onAddLeadClick(stageId)} 
+        onAddClick={() => onAddLeadClick(stageId)}
+        onEditStage={onEditStage}
       />
       
       <div className="mt-2 space-y-2">
         {isLoading ? (
           <div className="animate-pulse flex flex-col space-y-2">
-            <div className="h-24 bg-white/50 rounded-lg"></div>
-            <div className="h-24 bg-white/50 rounded-lg"></div>
+            <div className="h-20 bg-white/50 rounded-lg"></div>
+            <div className="h-20 bg-white/50 rounded-lg"></div>
           </div>
         ) : leads.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-24 border border-dashed border-gray-300 rounded-lg bg-white/70">
+          <div className="flex flex-col items-center justify-center h-20 border border-dashed border-gray-300 rounded-lg bg-white/70">
             <p className="text-xs text-gray-500 mb-1">Sem leads</p>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex items-center text-primary h-7 text-xs"
+              className="flex items-center text-primary h-6 text-xs"
               onClick={() => onAddLeadClick(stageId)}
             >
-              <PlusCircle size={14} className="mr-1" />
+              <PlusCircle size={12} className="mr-1" />
               Adicionar
             </Button>
           </div>

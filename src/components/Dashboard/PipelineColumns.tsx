@@ -12,6 +12,7 @@ interface PipelineColumnsProps {
   onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void;
   onAddLeadClick: (stageId: string) => void;
   isLoading: boolean;
+  onEditStage?: () => void; // New prop for editing stages
 }
 
 const PipelineColumns: React.FC<PipelineColumnsProps> = ({
@@ -22,7 +23,8 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
   onDragLeave,
   onDrop,
   onAddLeadClick,
-  isLoading
+  isLoading,
+  onEditStage
 }) => {
   return (
     <div className="flex space-x-2 p-1 min-w-max">
@@ -42,6 +44,7 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
             onDragLeave={onDragLeave}
             onDrop={onDrop}
             onAddLeadClick={onAddLeadClick}
+            onEditStage={onEditStage}
             count={stageLeads.length}
             isLoading={isLoading}
           />
