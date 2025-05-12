@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MoreHorizontal, Mail, Phone, Calendar, DollarSign, Building, MessageSquare } from 'lucide-react';
+import { MoreHorizontal, Mail, Phone, Calendar, DollarSign, Building, MessageSquare, Trash2, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -96,6 +96,17 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCre
   // Task creation
   const handleCreateTaskClick = () => {
     onCreateTask(lead);
+    toast.success("Tarefa criada para " + lead.name);
+  };
+
+  // Edit lead
+  const handleEditLeadClick = () => {
+    toast.info("Funcionalidade de edição em desenvolvimento");
+  };
+
+  // Delete lead
+  const handleDeleteLeadClick = () => {
+    toast.info("Funcionalidade de exclusão em desenvolvimento");
   };
 
   return (
@@ -140,13 +151,19 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCre
                   <MessageSquare className="mr-1 h-3 w-3" />
                   <span>WhatsApp</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-xs">Editar lead</DropdownMenuItem>
+                <DropdownMenuItem className="text-xs" onClick={handleEditLeadClick}>
+                  <Edit className="mr-1 h-3 w-3" />
+                  <span>Editar lead</span>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-xs" onClick={handleCreateTaskClick}>
                   <Calendar className="mr-1 h-3 w-3" />
                   <span>Criar tarefa</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-xs text-red-600">Excluir</DropdownMenuItem>
+                <DropdownMenuItem className="text-xs text-red-600" onClick={handleDeleteLeadClick}>
+                  <Trash2 className="mr-1 h-3 w-3" />
+                  <span>Excluir</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

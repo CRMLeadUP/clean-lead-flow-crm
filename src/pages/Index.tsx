@@ -36,8 +36,8 @@ const Index = () => {
           <div className="flex items-center">
             <Link to="/">
               <div className="flex items-center gap-2">
-                <Briefcase className="h-9 w-9 text-primary" />
-                <span className="font-bold text-2xl">LeadPro</span>
+                <Briefcase className="h-12 w-12 text-primary" />
+                <span className="font-bold text-3xl">LeadUP</span>
               </div>
             </Link>
           </div>
@@ -59,8 +59,8 @@ const Index = () => {
             <div className="flex flex-col md:flex-row items-center gap-12">
               <div className="md:w-1/2">
                 <div className="flex items-center mb-6">
-                  <Briefcase className="h-16 w-16 text-primary mr-4" />
-                  <h1 className="text-4xl font-bold">LeadPro</h1>
+                  <Briefcase className="h-20 w-20 text-primary mr-4" />
+                  <h1 className="text-5xl font-bold">LeadUP</h1>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">Transforme leads em <span className="text-primary">clientes satisfeitos</span> mais rápido</h2>
                 <p className="text-lg text-gray-600 mb-8">
@@ -84,7 +84,7 @@ const Index = () => {
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-100">
                   <img 
                     src="/placeholder.svg" 
-                    alt="Dashboard LeadPro" 
+                    alt="Dashboard LeadUP" 
                     className="rounded-md shadow-sm"
                     width="600"
                     height="400"
@@ -245,11 +245,11 @@ const Index = () => {
         <div className="container max-w-screen-xl mx-auto px-6 md:px-10">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-6 md:mb-0">
-              <Briefcase className="h-8 w-8 text-primary mr-2" />
-              <span className="font-bold text-xl">LeadPro</span>
+              <Briefcase className="h-10 w-10 text-primary mr-2" />
+              <span className="font-bold text-2xl">LeadUP</span>
             </div>
             <div className="text-gray-400 text-sm">
-              © 2023 LeadPro. Todos os direitos reservados.
+              © 2023 LeadUP. Todos os direitos reservados.
             </div>
           </div>
         </div>
