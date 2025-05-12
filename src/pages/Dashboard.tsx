@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/Layout/MainLayout';
 import PerformanceChart from '@/components/Dashboard/PerformanceChart';
 import SubscriptionCard from '@/components/Dashboard/SubscriptionCard';
 import { performanceMetrics } from '../data/MockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Bell, CheckCircle2 } from 'lucide-react';
+import { PlusCircle, Bell, CheckCircle2, Calendar, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { 
@@ -19,16 +19,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import TaskForm from '@/components/Dashboard/TaskForm';
 
 const Dashboard = () => {
-  const { totalLeads, newLeadsThisWeek, negotiationStage, closedDeals, totalRevenue } = performanceMetrics;
+  // Use dynamic/empty data instead of mock data
+  const [notificationsData, setNotificationsData] = useState([]);
+  const [showTaskDialog, setShowTaskDialog] = useState(false);
   const { leadsCount, leadsLimit, isProUser } = useSubscription();
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Reunião com Cliente', description: 'Preparar apresentação para Techno Solutions', date: '2023-09-15', completed: false },
-    { id: 2, title: 'Follow-up comercial', description: 'Entrar em contato com João da Construções JS', date: '2023-09-14', completed: false },
-    { id: 3, title: 'Enviar proposta', description: 'Finalizar proposta para Design Inovador', date: '2023-09-13', completed: true },
-  ]);
-  
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -55,21 +54,59 @@ const Dashboard = () => {
     </Card>
   );
   
+  // Add a new task
+  const handleAddTask = (taskData) => {
+    const newTask = {
+      id: Date.now(),
+      title: taskData.title,
+      description: taskData.description,
+      date: taskData.dueDate ? new Date(taskData.dueDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      priority: taskData.priority,
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    setNotificationsData(prev => [newTask, ...prev]);
+    setShowTaskDialog(false);
+    toast.success('Tarefa criada com sucesso!');
+  };
+  
+  // Complete a task
   const completeTask = (id: number) => {
-    setNotifications(notifications.map(n => 
+    setNotificationsData(notifications => notifications.map(n => 
       n.id === id ? {...n, completed: true} : n
     ));
     toast.success('Tarefa marcada como concluída!');
   };
   
-  const pendingNotifications = notifications.filter(n => !n.completed).length;
+  // Delete a task
+  const deleteTask = (id: number) => {
+    setNotificationsData(notifications => notifications.filter(n => n.id !== id));
+    toast.success('Tarefa removida com sucesso!');
+  };
+  
+  // Get pending notifications count
+  const pendingNotifications = notificationsData.filter(n => !n.completed).length;
+
+  // Get metrics based on lead data
+  const getBasedOnUserData = () => {
+    return {
+      totalLeads: leadsCount,
+      newLeadsThisWeek: 0,
+      negotiationStage: 0, 
+      closedDeals: 0,
+      totalRevenue: 0
+    };
+  };
+
+  const userMetrics = getBasedOnUserData();
   
   return (
     <MainLayout>
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-gray-500">Bem-vindo ao seu painel de controle, {performanceMetrics ? 'Jane' : 'Carregando...'}</p>
+          <p className="text-gray-500">Bem-vindo ao seu painel de controle</p>
         </div>
         <div className="flex gap-2">
           <DropdownMenu>
@@ -85,21 +122,52 @@ const Dashboard = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Suas Tarefas</DropdownMenuLabel>
+              <DropdownMenuLabel className="flex justify-between items-center">
+                <span>Suas Tarefas</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowTaskDialog(true)}
+                  className="h-7 px-2 text-xs text-primary"
+                >
+                  <PlusCircle className="h-3 w-3 mr-1" />
+                  Nova Tarefa
+                </Button>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {notifications.length === 0 ? (
+              {notificationsData.length === 0 ? (
                 <div className="py-4 text-center text-sm text-gray-500">
-                  Nenhuma tarefa para exibir
+                  <AlertTriangle className="h-5 w-5 mx-auto mb-1 text-gray-400" />
+                  <p>Nenhuma tarefa para exibir</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowTaskDialog(true)}
+                    className="mt-2"
+                  >
+                    <PlusCircle className="h-3 w-3 mr-1" />
+                    Criar Tarefa
+                  </Button>
                 </div>
               ) : (
-                notifications.map((notification) => (
+                notificationsData.map((notification) => (
                   <DropdownMenuItem key={notification.id} className="flex flex-col items-start p-0">
                     <div className="flex w-full items-start p-3 hover:bg-transparent">
                       <div className="flex-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-between">
                           <span className={`font-medium ${notification.completed ? 'text-gray-400 line-through' : ''}`}>
                             {notification.title}
                           </span>
+                          {notification.priority === 'high' && (
+                            <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
+                              Alta
+                            </Badge>
+                          )}
+                          {notification.priority === 'medium' && (
+                            <Badge variant="outline" className="ml-2 bg-amber-50 text-amber-700 border-amber-200">
+                              Média
+                            </Badge>
+                          )}
                           {notification.completed && (
                             <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
                               Concluída
@@ -107,23 +175,36 @@ const Dashboard = () => {
                           )}
                         </div>
                         <p className="text-sm text-gray-500 mt-1">{notification.description}</p>
-                        <div className="flex justify-between mt-2">
-                          <span className="text-xs text-gray-400">Para: {notification.date}</span>
-                          {!notification.completed && (
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="text-xs text-gray-400 flex items-center">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {notification.date}
+                          </span>
+                          <div className="flex gap-1">
+                            {!notification.completed && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 p-0 text-xs text-green-600 hover:text-green-700 hover:bg-transparent"
+                                onClick={() => completeTask(notification.id)}
+                              >
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Concluir
+                              </Button>
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 p-0 text-xs text-green-600 hover:text-green-700 hover:bg-transparent"
-                              onClick={() => completeTask(notification.id)}
+                              className="h-6 p-0 text-xs text-red-600 hover:text-red-700 hover:bg-transparent"
+                              onClick={() => deleteTask(notification.id)}
                             >
-                              <CheckCircle2 className="h-3 w-3 mr-1" />
-                              Concluir
+                              Remover
                             </Button>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                    {notification.id !== notifications[notifications.length - 1].id && <hr className="w-full" />}
+                    {notification.id !== notificationsData[notificationsData.length - 1].id && <hr className="w-full" />}
                   </DropdownMenuItem>
                 ))
               )}
@@ -131,9 +212,10 @@ const Dashboard = () => {
               <Button
                 variant="ghost"
                 className="w-full justify-center text-primary"
-                asChild
+                onClick={() => setShowTaskDialog(true)}
               >
-                <Link to="/tasks">Ver Todas</Link>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Nova Tarefa
               </Button>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -162,21 +244,21 @@ const Dashboard = () => {
         />
         <MetricCard
           title="Novos Leads (Semana)"
-          value={newLeadsThisWeek}
+          value={userMetrics.newLeadsThisWeek}
           color="green"
           icon={PlusCircle}
           change="+8%"
         />
         <MetricCard
           title="Em Negociação"
-          value={negotiationStage}
+          value={userMetrics.negotiationStage}
           color="orange"
           icon={PlusCircle}
           change="+12%"
         />
         <MetricCard
           title="Vendas Fechadas"
-          value={closedDeals}
+          value={userMetrics.closedDeals}
           color="purple"
           icon={PlusCircle}
           change="+5%"
@@ -191,7 +273,7 @@ const Dashboard = () => {
           <CardContent className="pt-0">
             <div className="flex justify-between items-end">
               <div>
-                <p className="text-3xl font-bold">{formatCurrency(totalRevenue)}</p>
+                <p className="text-3xl font-bold">{formatCurrency(userMetrics.totalRevenue)}</p>
                 <p className="text-sm text-green-600 mt-1">+12% vs. mês passado</p>
               </div>
               <div className="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">
@@ -208,11 +290,11 @@ const Dashboard = () => {
           <CardContent className="pt-0">
             <div className="flex justify-between items-end">
               <div>
-                <p className="text-3xl font-bold">32.5%</p>
-                <p className="text-sm text-red-600 mt-1">-4% vs. mês passado</p>
+                <p className="text-3xl font-bold">0%</p>
+                <p className="text-sm text-gray-600 mt-1">Sem dados ainda</p>
               </div>
-              <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm">
-                Atenção
+              <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-sm">
+                Sem dados
               </div>
             </div>
           </CardContent>
@@ -227,30 +309,34 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Card className="bg-blue-50">
               <CardContent className="p-4">
-                <h4 className="font-medium">Acompanhe Leads em Negociação</h4>
-                <p className="text-sm text-gray-600 mt-1">8 leads precisam de follow-up esta semana</p>
-                <Button variant="link" className="mt-2 p-0 h-auto text-blue-600">
-                  Ver leads
+                <h4 className="font-medium">Adicione seus primeiros leads</h4>
+                <p className="text-sm text-gray-600 mt-1">Configure seu funil de vendas</p>
+                <Button variant="link" className="mt-2 p-0 h-auto text-blue-600" asChild>
+                  <Link to="/leads">
+                    Ver funil de vendas
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
             
             <Card className="bg-amber-50">
               <CardContent className="p-4">
-                <h4 className="font-medium">Leads Inativos</h4>
-                <p className="text-sm text-gray-600 mt-1">3 leads sem interação há mais de 14 dias</p>
-                <Button variant="link" className="mt-2 p-0 h-auto text-amber-600">
-                  Reativar leads
+                <h4 className="font-medium">Configure seu perfil</h4>
+                <p className="text-sm text-gray-600 mt-1">Complete suas informações para começar</p>
+                <Button variant="link" className="mt-2 p-0 h-auto text-amber-600" asChild>
+                  <Link to="/profile">
+                    Editar perfil
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
             
             <Card className="bg-green-50">
               <CardContent className="p-4">
-                <h4 className="font-medium">Oportunidades de Upsell</h4>
-                <p className="text-sm text-gray-600 mt-1">5 clientes com potencial para novos produtos</p>
-                <Button variant="link" className="mt-2 p-0 h-auto text-green-600">
-                  Analisar oportunidades
+                <h4 className="font-medium">Organize suas tarefas</h4>
+                <p className="text-sm text-gray-600 mt-1">Crie tarefas para acompanhar seus leads</p>
+                <Button variant="link" className="mt-2 p-0 h-auto text-green-600" onClick={() => setShowTaskDialog(true)}>
+                  Criar tarefa
                 </Button>
               </CardContent>
             </Card>
@@ -261,38 +347,62 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold mb-4">Tarefas Pendentes</h2>
           <Card>
             <CardContent className="p-4 divide-y">
-              {notifications.filter(n => !n.completed).map((task) => (
-                <div key={task.id} className="py-3 first:pt-0 last:pb-0">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium">{task.title}</h3>
-                      <p className="text-sm text-gray-600 mt-0.5">{task.description}</p>
-                      <p className="text-xs text-gray-400 mt-1">Para: {task.date}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      className="p-1 h-auto text-green-600 hover:text-green-700"
-                      onClick={() => completeTask(task.id)}
-                    >
-                      <CheckCircle2 size={16} />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {notifications.filter(n => !n.completed).length === 0 && (
+              {notificationsData.filter(n => !n.completed).length === 0 ? (
                 <div className="py-6 text-center text-gray-500">
                   <p>Nenhuma tarefa pendente</p>
-                  <Button variant="outline" className="mt-2">
+                  <Button variant="outline" className="mt-2" onClick={() => setShowTaskDialog(true)}>
                     <PlusCircle className="mr-1 h-4 w-4" />
                     Nova Tarefa
                   </Button>
                 </div>
+              ) : (
+                notificationsData.filter(n => !n.completed).map((task) => (
+                  <div key={task.id} className="py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center">
+                          <h3 className="font-medium">{task.title}</h3>
+                          {task.priority === 'high' && (
+                            <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200 text-xs">
+                              Alta
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mt-0.5">{task.description}</p>
+                        <p className="text-xs text-gray-400 mt-1 flex items-center">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {task.date}
+                        </p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        className="p-1 h-auto text-green-600 hover:text-green-700"
+                        onClick={() => completeTask(task.id)}
+                      >
+                        <CheckCircle2 size={16} />
+                      </Button>
+                    </div>
+                  </div>
+                ))
               )}
             </CardContent>
           </Card>
         </div>
       </div>
+      
+      {/* Task Dialog */}
+      <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Criar Nova Tarefa</DialogTitle>
+          </DialogHeader>
+          <TaskForm
+            onSubmit={handleAddTask}
+            onCancel={() => setShowTaskDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };

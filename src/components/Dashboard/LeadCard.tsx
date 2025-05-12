@@ -26,9 +26,10 @@ interface LeadCardProps {
   };
   onDragStart: (e: React.DragEvent<HTMLDivElement>, leadId: number) => void;
   onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
+  onCreateTask: (lead: any) => void;
 }
 
-const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => {
+const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCreateTask }) => {
   const formattedRevenue = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
@@ -53,10 +54,32 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
 
   const avatarColor = getAvatarColor(lead.name);
 
+  // Email integration
+  const handleEmailClick = () => {
+    if (!lead.email) {
+      toast.error("Email não disponível");
+      return;
+    }
+    
+    window.location.href = `mailto:${lead.email}?subject=Contato - ${lead.company}`;
+    toast.success("Email aberto");
+  };
+  
+  // Phone integration
+  const handlePhoneClick = () => {
+    if (!lead.phone) {
+      toast.error("Telefone não disponível");
+      return;
+    }
+    
+    window.location.href = `tel:${lead.phone}`;
+    toast.success("Chamada iniciada");
+  };
+
   // WhatsApp integration
   const handleWhatsAppClick = () => {
     // Format phone number (remove non-digits)
-    const formattedPhone = lead.phone.replace(/\D/g, '');
+    const formattedPhone = lead.phone?.replace(/\D/g, '');
     
     // Check if phone number is valid
     if (!formattedPhone || formattedPhone.length < 8) {
@@ -67,6 +90,12 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
     // Create WhatsApp URL
     const whatsappUrl = `https://wa.me/${formattedPhone}`;
     window.open(whatsappUrl, '_blank');
+    toast.success("WhatsApp aberto");
+  };
+
+  // Task creation
+  const handleCreateTaskClick = () => {
+    onCreateTask(lead);
   };
 
   return (
@@ -99,11 +128,11 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuLabel className="text-xs">Ações</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-xs">
+                <DropdownMenuItem className="text-xs" onClick={handleEmailClick}>
                   <Mail className="mr-1 h-3 w-3" />
                   <span>Enviar email</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-xs">
+                <DropdownMenuItem className="text-xs" onClick={handlePhoneClick}>
                   <Phone className="mr-1 h-3 w-3" />
                   <span>Ligar</span>
                 </DropdownMenuItem>
@@ -113,7 +142,10 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-xs">Editar lead</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-xs">Criar tarefa</DropdownMenuItem>
+                <DropdownMenuItem className="text-xs" onClick={handleCreateTaskClick}>
+                  <Calendar className="mr-1 h-3 w-3" />
+                  <span>Criar tarefa</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem className="text-xs text-red-600">Excluir</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -131,10 +163,20 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
           </div>
           
           <div className="flex gap-1 mt-1">
-            <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={() => toast.success("Email enviado")}>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-[10px] h-5 px-1 py-0 rounded" 
+              onClick={handleEmailClick}
+            >
               <Mail className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="outline" className="text-[10px] h-5 px-1 py-0 rounded" onClick={() => toast.success("Chamada iniciada")}>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-[10px] h-5 px-1 py-0 rounded" 
+              onClick={handlePhoneClick}
+            >
               <Phone className="h-3 w-3" />
             </Button>
             <Button 
@@ -144,9 +186,17 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd }) => 
               onClick={handleWhatsAppClick}
             >
               {/* WhatsApp logo */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3">
-                <path d="M12 2a10 10 0 0 0-8.6 14.9L2 22l5.3-1.4A10 10 0 1 0 12 2m0 1.7A8.3 8.3 0 1 1 7.6 18.6l-.2-.2-3.1.8.8-3-.2-.3a8.3 8.3 0 0 1 7-12.2M8.5 7.3a1 1 0 0 0-.7.3A2.8 2.8 0 0 0 7 9.9a5 5 0 0 0 1.1 2.6 11.3 11.3 0 0 0 4.4 3.8c2.2.8 2.6.7 3.1.6.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.1-1.3l-.3-.1-1.4-.7c-.2 0-.3 0-.5.4l-.7 1.3a.4.4 0 0 1-.4.1 9.3 9.3 0 0 1-2.8-1.7 10 10 0 0 1-2-2.4c0-.2 0-.3.1-.4l.5-.4.2-.3c.1-.2.2-.3.3-.5.1-.2 0-.5 0-.6-.1-.2-.9-2.2-1.2-3-.3-.8-.5-.8-.8-.8h-.6Z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="h-3 w-3 fill-current">
+                <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
               </svg>
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-[10px] h-5 px-1 py-0 rounded ml-auto bg-blue-50 text-blue-600 hover:bg-blue-100" 
+              onClick={handleCreateTaskClick}
+            >
+              <Calendar className="h-3 w-3" />
             </Button>
           </div>
         </div>

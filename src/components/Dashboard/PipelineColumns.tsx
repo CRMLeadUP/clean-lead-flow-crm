@@ -11,8 +11,9 @@ interface PipelineColumnsProps {
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void;
   onAddLeadClick: (stageId: string) => void;
+  onCreateTask: (lead: any) => void;
   isLoading: boolean;
-  onEditStage?: () => void; // New prop for editing stages
+  onEditStage?: () => void;
 }
 
 const PipelineColumns: React.FC<PipelineColumnsProps> = ({
@@ -23,6 +24,7 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
   onDragLeave,
   onDrop,
   onAddLeadClick,
+  onCreateTask,
   isLoading,
   onEditStage
 }) => {
@@ -44,6 +46,7 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
             onDragLeave={onDragLeave}
             onDrop={onDrop}
             onAddLeadClick={onAddLeadClick}
+            onCreateTask={onCreateTask}
             onEditStage={onEditStage}
             count={stageLeads.length}
             isLoading={isLoading}

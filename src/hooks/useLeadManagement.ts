@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import TaskForm from '@/components/Dashboard/TaskForm';
 
 export const useLeadManagement = (
   leads: any[], 
@@ -15,6 +17,8 @@ export const useLeadManagement = (
   const [showAddLeadDialog, setShowAddLeadDialog] = useState(false);
   const [currentStageId, setCurrentStageId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTaskDialog, setShowTaskDialog] = useState(false);
+  const [currentLead, setCurrentLead] = useState<any>(null);
 
   const handleAddLeadClick = (stageId: string) => {
     // Check if user has reached their lead limit
@@ -29,6 +33,8 @@ export const useLeadManagement = (
 
   const handleAddLead = async (leadData: any) => {
     try {
+      setIsLoading(true);
+      
       // Check subscription limits before adding
       if (plan === 'free' && leadsCount >= leadsLimit) {
         toast.error('Você atingiu seu limite de leads no plano gratuito. Faça upgrade para o plano PRO.');
@@ -37,7 +43,7 @@ export const useLeadManagement = (
       
       // This would be a real database insert in a production app
       const newLead = {
-        id: leads.length + 1,
+        id: Date.now(), // Use timestamp for unique ID to prevent collisions
         ...leadData,
         stage: currentStageId || 'new_leads',
         createdAt: new Date().toISOString(),
@@ -79,13 +85,50 @@ export const useLeadManagement = (
         toast.error('Erro ao adicionar lead. Tente novamente.');
       }
       console.error('Error adding lead:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleCreateTask = (leadId: number, taskDetails: any) => {
+  const handleCreateTaskClick = (lead: any) => {
+    setCurrentLead(lead);
+    setShowTaskDialog(true);
+  };
+
+  const handleCreateTask = (taskDetails: any) => {
     toast.success('Tarefa criada com sucesso!');
-    // In a real app, this would save the task to a database
-    // and potentially set up notifications
+    
+    // Close the dialog
+    setShowTaskDialog(false);
+    
+    // Return task details with lead information
+    return {
+      ...taskDetails,
+      leadId: currentLead?.id,
+      leadName: currentLead?.name,
+      createdAt: new Date().toISOString(),
+      completed: false,
+      id: Date.now() // Use timestamp for unique ID
+    };
+  };
+
+  const TaskDialog = () => {
+    if (!showTaskDialog) return null;
+    
+    return (
+      <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Criar Nova Tarefa</DialogTitle>
+          </DialogHeader>
+          <TaskForm
+            onSubmit={handleCreateTask}
+            onCancel={() => setShowTaskDialog(false)}
+            leadName={currentLead?.name}
+          />
+        </DialogContent>
+      </Dialog>
+    );
   };
 
   return {
@@ -94,8 +137,12 @@ export const useLeadManagement = (
     currentStageId,
     handleAddLeadClick,
     handleAddLead,
+    handleCreateTaskClick,
     handleCreateTask,
     isLoading,
-    setIsLoading
+    setIsLoading,
+    showTaskDialog,
+    setShowTaskDialog,
+    TaskDialog
   };
 };

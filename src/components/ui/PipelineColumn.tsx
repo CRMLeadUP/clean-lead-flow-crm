@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PlusCircle } from 'lucide-react';
 import LeadCard from '../Dashboard/LeadCard';
@@ -15,6 +16,7 @@ interface PipelineColumnProps {
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void;
   onAddLeadClick: (stageId: string) => void;
+  onCreateTask: (lead: any) => void;
   onEditStage?: () => void;
   count: number;
   isLoading?: boolean;
@@ -31,6 +33,7 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
   onDragLeave,
   onDrop,
   onAddLeadClick,
+  onCreateTask,
   onEditStage,
   count,
   isLoading = false
@@ -123,6 +126,7 @@ const PipelineColumn: React.FC<PipelineColumnProps> = ({
               lead={lead}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
+              onCreateTask={() => onCreateTask(lead)}
             />
           ))
         )}
