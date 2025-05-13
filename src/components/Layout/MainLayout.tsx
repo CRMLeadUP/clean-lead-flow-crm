@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { 
   LayoutDashboard, 
   Users, 
@@ -11,7 +13,9 @@ import {
   Menu, 
   X, 
   CreditCard,
-  AlertTriangle
+  AlertTriangle,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 interface MainLayoutProps {
@@ -22,6 +26,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { signOut } = useAuth();
   const { leadsCount, leadsLimit, usagePercentage, plan } = useSubscription();
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -44,14 +49,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const showWarning = plan === 'free' && usagePercentage >= 80;
   
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className={`flex h-screen ${isDarkMode ? 'dark' : ''}`}>
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-40">
         <Button
           variant="outline"
           size="icon"
           onClick={toggleSidebar}
-          className="rounded-full bg-white shadow-sm"
+          className="rounded-full bg-background shadow-sm"
         >
           {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
         </Button>
@@ -59,12 +64,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white border-r border-gray-100 lg:translate-x-0 transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-background border-r border-border lg:translate-x-0 transition-transform duration-200 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-center h-28 border-b border-gray-100">
+          <div className="flex items-center justify-center h-28 border-b border-border">
             <Link to="/dashboard" className="flex items-center justify-center">
               <img 
                 src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
@@ -83,7 +88,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
                     isActive(item.path)
                       ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-foreground hover:bg-muted'
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -99,12 +104,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             
             {/* Lead usage for free users */}
             {plan === 'free' && (
-              <div className="mt-6 mx-4 p-3 bg-gray-50 rounded-lg">
+              <div className="mt-6 mx-4 p-3 bg-muted rounded-lg">
                 <div className="flex justify-between items-center text-sm mb-1">
                   <span>Uso de Leads</span>
                   <span className="font-medium">{leadsCount}/{leadsLimit}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-secondary rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full ${
                       usagePercentage >= 90 ? 'bg-red-500' : 
@@ -125,14 +130,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             )}
           </div>
           
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-border">
             <Button
               variant="outline"
               onClick={handleSignOut}
-              className="w-full justify-start"
+              className="w-full justify-start mb-2"
             >
               <LogOut size={18} className="mr-2" />
               Sair
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={toggleDarkMode}
+              className="w-full justify-start"
+            >
+              {isDarkMode ? (
+                <>
+                  <Sun size={18} className="mr-2" />
+                  Tema Claro
+                </>
+              ) : (
+                <>
+                  <Moon size={18} className="mr-2" />
+                  Tema Escuro
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -141,13 +164,41 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-20 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
       
       {/* Main content */}
       <div className="flex-1 flex flex-col lg:ml-64">
+        <header className="px-6 py-3 border-b border-border flex justify-between items-center">
+          <h1 className="text-lg font-semibold">LeadUP CRM</h1>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={toggleDarkMode}
+              className="flex items-center gap-1"
+            >
+              {isDarkMode ? (
+                <>
+                  <Sun size={16} />
+                  <span className="hidden sm:inline">Tema Claro</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={16} />
+                  <span className="hidden sm:inline">Tema Escuro</span>
+                </>
+              )}
+            </Button>
+            <Link to="/leads">
+              <Button size="sm">
+                Adicionar Lead
+              </Button>
+            </Link>
+          </div>
+        </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="container mx-auto">{children}</div>
         </main>

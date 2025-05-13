@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/Layout/MainLayout';
 import PipelineView from '@/components/Dashboard/PipelineView';
 import { Button } from '@/components/ui/button';
@@ -16,23 +16,66 @@ import {
   DropdownMenuCheckboxItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Leads = () => {
   const [showAddLeadDialog, setShowAddLeadDialog] = useState(false);
-  const { leadsCount, leadsLimit, plan, isLoading } = useSubscription();
+  const { leadsCount, leadsLimit, plan, isLoading, refreshSubscriptionData } = useSubscription();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState({
     highValue: false,
     recent: false,
     noActivity: false
   });
+  const [leads, setLeads] = useState<any[]>([]);
   
   const isAtLimit = plan === 'free' && leadsCount >= leadsLimit;
   
+  // Load leads when component mounts
+  useEffect(() => {
+    if (user) {
+      loadLeads();
+    }
+  }, [user]);
+  
+  // Function to load leads from local storage
+  const loadLeads = () => {
+    const savedLeads = localStorage.getItem('leads');
+    if (savedLeads) {
+      setLeads(JSON.parse(savedLeads));
+    }
+  };
+  
   const handleAddLead = (data: any) => {
-    // In a real app, we would add the lead to the database
-    setShowAddLeadDialog(false);
-    toast.success('Lead adicionado com sucesso!');
+    try {
+      // Check subscription limits
+      if (isAtLimit) {
+        toast.error(`Você atingiu o limite de ${leadsLimit} leads do plano ${plan === 'free' ? 'Gratuito' : 'PRO'}.`);
+        return;
+      }
+      
+      // Create new lead
+      const newLead = {
+        id: Date.now(),
+        ...data,
+        stage: 'new_leads',
+        createdAt: new Date().toISOString(),
+        lastContact: new Date().toISOString()
+      };
+      
+      // Add lead to local storage
+      const updatedLeads = [...leads, newLead];
+      localStorage.setItem('leads', JSON.stringify(updatedLeads));
+      setLeads(updatedLeads);
+      
+      // Close dialog and refresh data
+      setShowAddLeadDialog(false);
+      refreshSubscriptionData();
+      toast.success('Lead adicionado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao adicionar lead. Tente novamente.');
+    }
   };
   
   const handleFilterChange = (key: string) => {
@@ -48,7 +91,7 @@ const Leads = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div>
             <h1 className="text-xl font-bold">Funil de Vendas</h1>
-            <p className="text-sm text-gray-500">Gerencie seus leads através das etapas de venda</p>
+            <p className="text-sm">Gerencie seus leads através das etapas de venda</p>
           </div>
           <div className="flex gap-2">
             <DropdownMenu>
@@ -104,7 +147,7 @@ const Leads = () => {
         )}
         
         <div className="relative max-w-xs">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
           <Input 
             placeholder="Buscar leads" 
             className="pl-8 h-8 text-sm"

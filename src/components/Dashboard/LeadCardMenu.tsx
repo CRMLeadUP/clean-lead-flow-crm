@@ -20,9 +20,11 @@ interface LeadCardMenuProps {
     phone: string;
   };
   onCreateTask: () => void;
+  onEditLead: () => void;
+  onDeleteLead: () => void;
 }
 
-const LeadCardMenu: React.FC<LeadCardMenuProps> = ({ lead, onCreateTask }) => {
+const LeadCardMenu: React.FC<LeadCardMenuProps> = ({ lead, onCreateTask, onEditLead, onDeleteLead }) => {
   // Email integration
   const handleEmailClick = () => {
     if (!lead.email) {
@@ -62,16 +64,6 @@ const LeadCardMenu: React.FC<LeadCardMenuProps> = ({ lead, onCreateTask }) => {
     toast.success("WhatsApp aberto");
   };
 
-  // Edit lead
-  const handleEditLeadClick = () => {
-    toast.info("Funcionalidade de edição em desenvolvimento");
-  };
-
-  // Delete lead
-  const handleDeleteLeadClick = () => {
-    toast.info("Funcionalidade de exclusão em desenvolvimento");
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -94,7 +86,7 @@ const LeadCardMenu: React.FC<LeadCardMenuProps> = ({ lead, onCreateTask }) => {
           <MessageSquare className="mr-1 h-3 w-3" />
           <span>WhatsApp</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-xs" onClick={handleEditLeadClick}>
+        <DropdownMenuItem className="text-xs" onClick={onEditLead}>
           <Edit className="mr-1 h-3 w-3" />
           <span>Editar lead</span>
         </DropdownMenuItem>
@@ -103,7 +95,7 @@ const LeadCardMenu: React.FC<LeadCardMenuProps> = ({ lead, onCreateTask }) => {
           <Calendar className="mr-1 h-3 w-3" />
           <span>Criar tarefa</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-xs text-red-600" onClick={handleDeleteLeadClick}>
+        <DropdownMenuItem className="text-xs text-red-600" onClick={onDeleteLead}>
           <Trash2 className="mr-1 h-3 w-3" />
           <span>Excluir</span>
         </DropdownMenuItem>

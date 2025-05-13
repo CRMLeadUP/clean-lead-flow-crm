@@ -159,7 +159,7 @@ const Subscription = () => {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-primary">Seu plano atual: <span className="font-bold">{plan.toUpperCase()}</span></h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm mt-1">
                   {isFree 
                     ? 'Você está usando o plano gratuito. Faça upgrade para acessar mais recursos.' 
                     : isPro 
@@ -209,12 +209,12 @@ const Subscription = () => {
           price={formatCurrency(29.90)}
           description="Para profissionais e pequenas equipes"
           features={[
-            "Cadastro ilimitado de leads",
+            "Até 300 leads",
             "Gerenciamento completo do pipeline",
             "Relatórios avançados (3 mensais)",
             "Acompanhamento de atividades",
-            "1 usuário único",
-            "Suporte prioritário"
+            "Integração com WhatsApp",
+            "1 usuário único"
           ]}
           buttonText={isPro ? "Plano Atual" : "Fazer Upgrade"}
           current={isPro}
@@ -228,13 +228,13 @@ const Subscription = () => {
           price={formatCurrency(59.90)}
           description="Para profissionais exigentes"
           features={[
-            "Cadastro ilimitado de leads e contatos",
+            "Até 1000 leads",
             "Relatórios avançados ilimitados",
             "Integração com ferramentas externas",
+            "Integração com WhatsApp",
             "Priorização no suporte",
             "1 usuário único",
-            "API de acesso",
-            "Importação/exportação de dados",
+            "API de acesso"
           ]}
           buttonText={isAdvanced ? "Plano Atual" : "Fazer Upgrade"}
           buttonVariant={isAdvanced ? "outline" : "default"}

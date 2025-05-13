@@ -19,13 +19,29 @@ interface LeadCardProps {
   onDragStart: (e: React.DragEvent<HTMLDivElement>, leadId: number) => void;
   onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
   onCreateTask: (lead: any) => void;
+  onEditLead: (lead: any) => void;
+  onDeleteLead: (leadId: number) => void;
+  planType?: string;
 }
 
-const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCreateTask }) => {
+const LeadCard: React.FC<LeadCardProps> = ({ 
+  lead, 
+  onDragStart, 
+  onDragEnd, 
+  onCreateTask, 
+  onEditLead,
+  onDeleteLead,
+  planType = 'free'
+}) => {
   const avatarColor = getAvatarColor(lead.name);
 
   // WhatsApp integration
   const handleWhatsAppClick = () => {
+    if (planType === 'free') {
+      toast.error('Integração com WhatsApp disponível apenas nos planos PRO e Avançado');
+      return;
+    }
+    
     // Format phone number (remove non-digits)
     const formattedPhone = lead.phone?.replace(/\D/g, '');
     
@@ -41,7 +57,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCre
 
   return (
     <div
-      className="lead-card bg-white rounded-md shadow-sm border border-gray-200 cursor-move transition-all duration-200 hover:shadow-md hover:border-primary/20 p-2"
+      className="lead-card rounded-md shadow-sm border border-border cursor-move transition-all duration-200 hover:shadow-md hover:border-primary/20 p-2"
       draggable={true}
       onDragStart={(e) => onDragStart(e, lead.id)}
       onDragEnd={onDragEnd}
@@ -62,6 +78,8 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCre
             <LeadCardMenu 
               lead={lead}
               onCreateTask={() => onCreateTask(lead)}
+              onEditLead={() => onEditLead(lead)}
+              onDeleteLead={() => onDeleteLead(lead.id)}
             />
           </div>
           
@@ -70,6 +88,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onDragStart, onDragEnd, onCre
             phone={lead.phone}
             onCreateTask={() => onCreateTask(lead)}
             onWhatsAppClick={handleWhatsAppClick}
+            planType={planType}
           />
         </div>
       </div>

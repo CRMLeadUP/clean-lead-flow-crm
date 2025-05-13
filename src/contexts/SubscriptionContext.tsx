@@ -1,130 +1,115 @@
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 
-type SubscriptionPlan = 'free' | 'pro' | 'advanced';
+// Define types for the context
+type Plan = 'free' | 'pro' | 'advanced';
 
 interface SubscriptionContextType {
-  plan: SubscriptionPlan;
+  plan: Plan;
   leadsCount: number;
   leadsLimit: number;
+  usagePercentage: number;
   isLoading: boolean;
   isProUser: boolean;
-  usagePercentage: number;
   refreshSubscriptionData: () => Promise<void>;
-  upgradeSubscription: (planType?: SubscriptionPlan) => Promise<void>;
+  upgradeSubscription: (newPlan: Plan) => Promise<void>;
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+const SubscriptionContext = createContext<SubscriptionContextType>({
+  plan: 'free',
+  leadsCount: 0,
+  leadsLimit: 10,
+  usagePercentage: 0,
+  isLoading: true,
+  isProUser: false,
+  refreshSubscriptionData: async () => {},
+  upgradeSubscription: async () => {},
+});
 
-const planLimits = {
-  free: 10,
-  pro: Infinity,
-  advanced: Infinity,
-};
+export const useSubscription = () => useContext(SubscriptionContext);
 
-const userLimits = {
-  free: 1,
-  pro: 1,
-  advanced: 1,
-};
-
-export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const [plan, setPlan] = useState<SubscriptionPlan>('free');
+  const [plan, setPlan] = useState<Plan>('free');
   const [leadsCount, setLeadsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  const leadsLimit = planLimits[plan];
-  const userLimit = userLimits[plan];
-  const isProUser = plan !== 'free';
-  const usagePercentage = plan === 'free' ? Math.min(Math.round((leadsCount / leadsLimit) * 100), 100) : 0;
-
-  const fetchSubscriptionData = async () => {
-    if (!user) {
-      setIsLoading(false);
-      return;
+  
+  // Define lead limits based on plan
+  const getPlanLimit = (plan: Plan): number => {
+    switch (plan) {
+      case 'pro':
+        return 300;
+      case 'advanced':
+        return 1000;
+      default:
+        return 10;
     }
+  };
+  
+  const leadsLimit = getPlanLimit(plan);
+  const usagePercentage = Math.min(Math.round((leadsCount / leadsLimit) * 100), 100);
+  const isProUser = plan !== 'free';
 
+  // Load the subscription data
+  const loadSubscriptionData = async () => {
     try {
       setIsLoading(true);
       
-      // Fetch user's subscription plan from user_plans table
-      const { data: userPlanData, error: userPlanError } = await supabase
-        .from('user_plans')
-        .select('plan_type')
-        .eq('user_id', user.id)
-        .single();
-
-      if (userPlanError && userPlanError.code !== 'PGRST116') {
-        // PGRST116 is "No rows returned" which just means the user doesn't have a plan yet
-        console.error('Error fetching user plan:', userPlanError);
-        
-        // If no plan exists, create a default 'free' plan for the user
-        if (userPlanError.code === 'PGRST116') {
-          const { error: insertError } = await supabase
-            .from('user_plans')
-            .insert({ user_id: user.id, plan_type: 'free' });
-            
-          if (insertError) throw insertError;
-          setPlan('free');
-        } else {
-          throw userPlanError;
-        }
-      } else if (userPlanData) {
-        // Set the user's plan based on plan_type from user_plans
-        setPlan(userPlanData.plan_type as SubscriptionPlan);
+      // In a real app, this would be fetched from a database
+      // For now, let's get it from localStorage
+      const savedPlan = localStorage.getItem('subscriptionPlan');
+      if (savedPlan) {
+        setPlan(savedPlan as Plan);
       }
-
-      // Count user's leads
-      const { count, error: countError } = await supabase
-        .from('leads')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id);
-
-      if (countError) throw countError;
-      setLeadsCount(count || 0);
-    } catch (error: any) {
-      console.error('Error fetching subscription data:', error.message);
-      toast.error('Erro ao carregar dados da assinatura');
+      
+      // Count leads from localStorage
+      const savedLeads = localStorage.getItem('leads');
+      if (savedLeads) {
+        const leads = JSON.parse(savedLeads);
+        setLeadsCount(leads.length);
+      } else {
+        setLeadsCount(0);
+      }
+      
+    } catch (error) {
+      console.error('Error loading subscription data:', error);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
+  // Refresh the subscription data
   const refreshSubscriptionData = async () => {
-    await fetchSubscriptionData();
+    await loadSubscriptionData();
   };
-
-  const upgradeSubscription = async (planType: SubscriptionPlan = 'pro') => {
-    if (!user) return;
-    
+  
+  // Upgrade the subscription
+  const upgradeSubscription = async (newPlan: Plan) => {
     try {
-      toast.info(`Iniciando processo de upgrade para o plano ${planType.toUpperCase()}...`);
+      setIsLoading(true);
       
-      // Update the user's plan in the user_plans table
-      const { error } = await supabase
-        .from('user_plans')
-        .update({ plan_type: planType })
-        .eq('user_id', user.id);
+      // In a real app, this would be a call to a payment processor
+      // For now, just update the local state
+      setPlan(newPlan);
+      localStorage.setItem('subscriptionPlan', newPlan);
       
-      if (error) throw error;
-      
-      // Set the plan immediately to update UI
-      setPlan(planType);
-      
+      // Refresh the data
       await refreshSubscriptionData();
-      toast.success(`Parabéns! Você agora é um usuário ${planType.toUpperCase()}!`);
-    } catch (error: any) {
-      console.error('Error upgrading subscription:', error.message);
-      toast.error('Erro ao realizar upgrade. Tente novamente.');
+      
+    } catch (error) {
+      console.error('Error upgrading subscription:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
-
+  
+  // Load the subscription data when the user changes
   useEffect(() => {
-    fetchSubscriptionData();
+    if (user) {
+      loadSubscriptionData();
+    }
   }, [user]);
 
   return (
@@ -133,9 +118,9 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
         plan,
         leadsCount,
         leadsLimit,
+        usagePercentage,
         isLoading,
         isProUser,
-        usagePercentage,
         refreshSubscriptionData,
         upgradeSubscription,
       }}
@@ -143,12 +128,4 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       {children}
     </SubscriptionContext.Provider>
   );
-};
-
-export const useSubscription = () => {
-  const context = useContext(SubscriptionContext);
-  if (!context) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
-  }
-  return context;
 };
