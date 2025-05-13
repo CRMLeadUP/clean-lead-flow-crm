@@ -40,30 +40,30 @@
 
   .dark {
     --background: 0 0% 7%;  /* #121212 */
-    --foreground: 0 0% 100%; /* White */
+    --foreground: 0 0% 98%; /* Slightly off-white for better contrast */
 
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 10%;  /* Slightly lighter than background */
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
 
     --primary: 122 39% 49%; /* #4CAF50 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 46%; /* #757575 */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%; /* Slightly lighter for better contrast */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 0 0% 15%;  /* Adjusted for better visibility */
+    --muted-foreground: 0 0% 80%; /* Brighter for better readability */
 
     --accent: 122 39% 49%; /* #4CAF50 */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 50%;  /* Brighter red for visibility */
     --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 20%;
+    --border: 0 0% 20%;  /* Slightly lighter borders */
     --input: 0 0% 20%;
     --ring: 122 39% 49%;
   }
@@ -91,4 +91,26 @@
 
 .dragging {
   @apply opacity-50 shadow-lg;
+}
+
+/* Dark mode specific styles */
+.dark .lead-card {
+  @apply border-gray-700 bg-gray-800/80;
+}
+
+.dark .lead-card-info {
+  @apply text-gray-200;
+}
+
+/* Improve contrast in dark mode */
+.dark .text-gray-500 {
+  @apply text-gray-300;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-300;
+}
+
+.dark .bg-muted {
+  @apply bg-gray-800;
 }

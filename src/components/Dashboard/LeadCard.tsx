@@ -4,6 +4,7 @@ import LeadCardMenu from './LeadCardMenu';
 import LeadCardInfo from './LeadCardInfo';
 import LeadCardActions from './LeadCardActions';
 import { getAvatarColor } from '@/utils/leadUtils';
+import { toast } from 'sonner';
 
 interface LeadCardProps {
   lead: {

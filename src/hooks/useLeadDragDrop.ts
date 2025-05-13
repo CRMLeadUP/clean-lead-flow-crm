@@ -50,29 +50,19 @@ export const useLeadDragDrop = (leads: any[], setLeads: React.Dispatch<React.Set
           lead.id === draggedLeadId ? { ...lead, stage: stageId } : lead
         );
         
+        // Update local state
         setLeads(updatedLeads);
         setDraggedLeadId(null);
         
+        // Save to localStorage to persist across page changes
+        localStorage.setItem('leads', JSON.stringify(updatedLeads));
+        
         // Get the lead and stage names for the toast
         const lead = leads.find(l => l.id === draggedLeadId);
-        const stage = stageId;
+        const stageName = stageId.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         
-        if (lead && stage) {
-          // In a production app, this would update the database
-          /* 
-          if (user) {
-            setIsLoading(true);
-            const { error } = await supabase
-              .from('leads')
-              .update({ status: stageId })
-              .eq('id', leadToUpdate.id)
-              .eq('user_id', user.id);
-              
-            if (error) throw error;
-          }
-          */
-          
-          toast.success(`${lead.name} movido para ${stage}`);
+        if (lead && stageName) {
+          toast.success(`${lead.name} movido para ${stageName}`);
         }
       } catch (error: any) {
         console.error('Error updating lead stage:', error);

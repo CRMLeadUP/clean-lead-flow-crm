@@ -134,28 +134,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <Button
               variant="outline"
               onClick={handleSignOut}
-              className="w-full justify-start mb-2"
+              className="w-full justify-start"
             >
               <LogOut size={18} className="mr-2" />
               Sair
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={toggleDarkMode}
-              className="w-full justify-start"
-            >
-              {isDarkMode ? (
-                <>
-                  <Sun size={18} className="mr-2" />
-                  Tema Claro
-                </>
-              ) : (
-                <>
-                  <Moon size={18} className="mr-2" />
-                  Tema Escuro
-                </>
-              )}
             </Button>
           </div>
         </div>

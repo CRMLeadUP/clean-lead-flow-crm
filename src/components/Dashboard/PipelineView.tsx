@@ -12,6 +12,7 @@ import PipelineActions from './PipelineActions';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TaskForm from '@/components/Dashboard/TaskForm';
 import EditLeadDialog from './EditLeadDialog';
+import LeadForm from './LeadForm';
 
 const PipelineView = () => {
   // Starting with empty leads array
