@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, Briefcase, CheckCircle, ChevronRight, CreditCard, Users } from 'lucide-react';
+import { CheckCircle, ChevronRight, CreditCard, Users, BarChart3 } from 'lucide-react';
 
 const Index = () => {
   const features = [
@@ -36,8 +36,11 @@ const Index = () => {
           <div className="flex items-center">
             <Link to="/">
               <div className="flex items-center gap-2">
-                <Briefcase className="h-12 w-12 text-primary" />
-                <span className="font-bold text-3xl">LeadUP</span>
+                <img 
+                  src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
+                  alt="LeadUP Logo" 
+                  className="h-12 w-auto"
+                />
               </div>
             </Link>
           </div>
@@ -59,8 +62,11 @@ const Index = () => {
             <div className="flex flex-col md:flex-row items-center gap-12">
               <div className="md:w-1/2">
                 <div className="flex items-center mb-6">
-                  <Briefcase className="h-20 w-20 text-primary mr-4" />
-                  <h1 className="text-5xl font-bold">LeadUP</h1>
+                  <img 
+                    src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
+                    alt="LeadUP Logo" 
+                    className="h-20 w-auto mr-4"
+                  />
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">Transforme leads em <span className="text-primary">clientes satisfeitos</span> mais rápido</h2>
                 <p className="text-lg text-gray-600 mb-8">
@@ -83,11 +89,9 @@ const Index = () => {
               <div className="md:w-1/2">
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-100">
                   <img 
-                    src="/placeholder.svg" 
-                    alt="Dashboard LeadUP" 
-                    className="rounded-md shadow-sm"
-                    width="600"
-                    height="400"
+                    src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80" 
+                    alt="Equipe trabalhando no CRM" 
+                    className="rounded-md shadow-sm w-full h-auto object-cover"
                   />
                 </div>
               </div>
@@ -138,14 +142,13 @@ const Index = () => {
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="border-gray-100 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Free</CardTitle>
+                  <CardTitle className="text-lg">Básico</CardTitle>
                   <div className="mt-1">
-                    <span className="text-3xl font-bold">R$0</span>
-                    <span className="text-gray-500 ml-1">/mês</span>
+                    <span className="text-3xl font-bold">Grátis</span>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">Ideal para profissionais autônomos</p>
+                  <p className="text-gray-600 mb-4">Ideal para começar a gerenciar leads</p>
                   <ul className="space-y-2">
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
@@ -153,11 +156,15 @@ const Index = () => {
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>1 usuário</span>
+                      <span>Visualização básica de pipeline</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Funcionalidades básicas</span>
+                      <span>Relatórios simples (1 relatório mensal)</span>
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                      <span>1 usuário único</span>
                     </li>
                   </ul>
                   <Button variant="outline" className="w-full mt-6">
@@ -173,28 +180,32 @@ const Index = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Pro</CardTitle>
                   <div className="mt-1">
-                    <span className="text-3xl font-bold">R$97</span>
+                    <span className="text-3xl font-bold">R$29,90</span>
                     <span className="text-gray-500 ml-1">/mês</span>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">Ideal para pequenas equipes</p>
+                  <p className="text-gray-600 mb-4">Ideal para autônomos e pequenas equipes</p>
                   <ul className="space-y-2">
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Até 300 leads</span>
+                      <span>Cadastro ilimitado de leads</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>5 usuários</span>
+                      <span>Gerenciamento completo do pipeline</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Funcionalidades avançadas</span>
+                      <span>Relatórios avançados (3 mensais)</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Relatórios avançados</span>
+                      <span>Acompanhamento de atividades</span>
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                      <span>1 usuário único</span>
                     </li>
                   </ul>
                   <Button className="w-full mt-6">
@@ -207,32 +218,36 @@ const Index = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Avançado</CardTitle>
                   <div className="mt-1">
-                    <span className="text-3xl font-bold">R$197</span>
+                    <span className="text-3xl font-bold">R$59,90</span>
                     <span className="text-gray-500 ml-1">/mês</span>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">Ideal para equipes maiores</p>
+                  <p className="text-gray-600 mb-4">Ideal para profissionais exigentes</p>
                   <ul className="space-y-2">
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Até 1000 leads</span>
+                      <span>Cadastro ilimitado de leads e contatos</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>10 usuários</span>
+                      <span>Relatórios avançados ilimitados</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Todas as funcionalidades</span>
+                      <span>Integração com ferramentas externas</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                      <span>Suporte prioritário</span>
+                      <span>Priorização no suporte</span>
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                      <span>1 usuário único</span>
                     </li>
                   </ul>
                   <Button variant="outline" className="w-full mt-6">
-                    <Link to="/signup" className="w-full">Entre em Contato</Link>
+                    <Link to="/signup" className="w-full">Saiba Mais</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -245,8 +260,11 @@ const Index = () => {
         <div className="container max-w-screen-xl mx-auto px-6 md:px-10">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-6 md:mb-0">
-              <Briefcase className="h-10 w-10 text-primary mr-2" />
-              <span className="font-bold text-2xl">LeadUP</span>
+              <img 
+                src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
+                alt="LeadUP Logo" 
+                className="h-10 w-auto mr-2 brightness-200"
+              />
             </div>
             <div className="text-gray-400 text-sm">
               © 2023 LeadUP. Todos os direitos reservados.

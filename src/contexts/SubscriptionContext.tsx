@@ -21,14 +21,14 @@ const SubscriptionContext = createContext<SubscriptionContextType | undefined>(u
 
 const planLimits = {
   free: 10,
-  pro: 300,
-  advanced: 1000,
+  pro: Infinity,
+  advanced: Infinity,
 };
 
 const userLimits = {
   free: 1,
-  pro: 5,
-  advanced: 10,
+  pro: 1,
+  advanced: 1,
 };
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,7 +40,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const leadsLimit = planLimits[plan];
   const userLimit = userLimits[plan];
   const isProUser = plan !== 'free';
-  const usagePercentage = Math.min(Math.round((leadsCount / leadsLimit) * 100), 100);
+  const usagePercentage = plan === 'free' ? Math.min(Math.round((leadsCount / leadsLimit) * 100), 100) : 0;
 
   const fetchSubscriptionData = async () => {
     if (!user) {

@@ -188,15 +188,14 @@ const Subscription = () => {
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <PricingCard
-          title="Grátis"
+          title="Básico"
           price="Grátis"
           description="Para começar a gerenciar leads"
           features={[
             "Até 10 leads",
-            "Gerenciamento de funil básico",
-            "1 usuário",
-            "Dashboard básico",
-            "Suporte por email"
+            "Visualização básica de pipeline",
+            "Relatórios simples (1 relatório mensal)",
+            "1 usuário único"
           ]}
           buttonText={isFree ? "Plano Atual" : "Fazer Downgrade"}
           buttonVariant={isFree ? "outline" : "default"}
@@ -207,15 +206,14 @@ const Subscription = () => {
         
         <PricingCard
           title="PRO"
-          price={formatCurrency(19.90)}
+          price={formatCurrency(29.90)}
           description="Para profissionais e pequenas equipes"
           features={[
-            "Até 300 leads",
-            "Gerenciamento de funil avançado",
-            "5 usuários",
-            "Etapas de funil personalizáveis",
-            "Integração com WhatsApp",
-            "Relatórios avançados",
+            "Cadastro ilimitado de leads",
+            "Gerenciamento completo do pipeline",
+            "Relatórios avançados (3 mensais)",
+            "Acompanhamento de atividades",
+            "1 usuário único",
             "Suporte prioritário"
           ]}
           buttonText={isPro ? "Plano Atual" : "Fazer Upgrade"}
@@ -227,18 +225,16 @@ const Subscription = () => {
         
         <PricingCard
           title="Avançado"
-          price={formatCurrency(49.90)}
-          description="Para equipes maiores e empresas"
+          price={formatCurrency(59.90)}
+          description="Para profissionais exigentes"
           features={[
-            "Leads ilimitados",
-            "Gerenciamento de funil completo",
-            "10 usuários",
-            "Integrações com APIs externas",
-            "Relatórios personalizados",
+            "Cadastro ilimitado de leads e contatos",
+            "Relatórios avançados ilimitados",
+            "Integração com ferramentas externas",
+            "Priorização no suporte",
+            "1 usuário único",
             "API de acesso",
-            "Integração com WhatsApp Empresarial",
             "Importação/exportação de dados",
-            "Suporte dedicado"
           ]}
           buttonText={isAdvanced ? "Plano Atual" : "Fazer Upgrade"}
           buttonVariant={isAdvanced ? "outline" : "default"}
@@ -255,17 +251,17 @@ const Subscription = () => {
             <CardContent className="p-6">
               <PaymentHistoryItem 
                 date="12 de Maio, 2023" 
-                amount={formatCurrency(isPro ? 19.90 : 49.90)} 
+                amount={formatCurrency(isPro ? 29.90 : 59.90)} 
                 status="success" 
               />
               <PaymentHistoryItem 
                 date="12 de Abril, 2023" 
-                amount={formatCurrency(isPro ? 19.90 : 49.90)} 
+                amount={formatCurrency(isPro ? 29.90 : 59.90)} 
                 status="success" 
               />
               <PaymentHistoryItem 
                 date="12 de Março, 2023" 
-                amount={formatCurrency(isPro ? 19.90 : 49.90)} 
+                amount={formatCurrency(isPro ? 29.90 : 59.90)} 
                 status="success" 
               />
               
@@ -289,7 +285,7 @@ const Subscription = () => {
           
           <div>
             <h3 className="font-medium">Quantos usuários estão incluídos em cada plano?</h3>
-            <p className="text-gray-600">O plano Gratuito inclui 1 usuário, o plano PRO inclui até 5 usuários, e o plano Avançado inclui até 10 usuários.</p>
+            <p className="text-gray-600">Todos os planos incluem 1 usuário único.</p>
           </div>
           
           <div>
