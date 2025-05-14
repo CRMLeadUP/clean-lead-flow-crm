@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Bell, Filter, AlertTriangle, Calendar, CheckCircle2 } from 'lucide-react';
@@ -12,6 +13,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 interface DashboardHeaderProps {
   pendingNotifications: number;
@@ -40,6 +42,16 @@ const DashboardHeader = ({
 
   const handleAddLeadClick = () => {
     navigate('/leads');
+  };
+
+  const handleCompleteTask = (id: number) => {
+    onNotificationComplete(id);
+    toast.success('Tarefa marcada como concluída!');
+  };
+
+  const handleDeleteTask = (id: number) => {
+    onNotificationDelete(id);
+    toast.success('Tarefa removida com sucesso!');
   };
 
   return (
@@ -155,7 +167,7 @@ const DashboardHeader = ({
                               variant="ghost"
                               size="sm"
                               className="h-6 p-0 text-xs text-green-600 hover:text-green-700 hover:bg-transparent"
-                              onClick={() => onNotificationComplete(notification.id)}
+                              onClick={() => handleCompleteTask(notification.id)}
                             >
                               <CheckCircle2 className="h-3 w-3 mr-1" />
                               Concluir
@@ -163,20 +175,20 @@ const DashboardHeader = ({
                           )}
                           <Button
                             variant="ghost"
-                              size="sm"
-                              className="h-6 p-0 text-xs text-red-600 hover:text-red-700 hover:bg-transparent"
-                              onClick={() => onNotificationDelete(notification.id)}
-                            >
-                              Remover
-                            </Button>
-                          </div>
+                            size="sm"
+                            className="h-6 p-0 text-xs text-red-600 hover:text-red-700 hover:bg-transparent"
+                            onClick={() => handleDeleteTask(notification.id)}
+                          >
+                            Remover
+                          </Button>
                         </div>
                       </div>
                     </div>
-                    {notification.id !== notifications[notifications.length - 1].id && <hr className="w-full" />}
-                  </DropdownMenuItem>
-                ))
-              )}
+                  </div>
+                  {notification.id !== notifications[notifications.length - 1].id && <hr className="w-full" />}
+                </DropdownMenuItem>
+              ))
+            )}
             <DropdownMenuSeparator />
             <Button
               variant="ghost"
