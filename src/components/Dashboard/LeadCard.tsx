@@ -48,12 +48,14 @@ const LeadCard: React.FC<LeadCardProps> = ({
     
     // Check if phone number is valid
     if (!formattedPhone || formattedPhone.length < 8) {
+      toast.error("Número de telefone inválido");
       return;
     }
     
     // Create WhatsApp URL
     const whatsappUrl = `https://wa.me/${formattedPhone}`;
     window.open(whatsappUrl, '_blank');
+    toast.success("WhatsApp aberto");
   };
 
   return (

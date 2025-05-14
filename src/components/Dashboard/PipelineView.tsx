@@ -32,6 +32,7 @@ const PipelineView = () => {
     handleAddLead,
     handleUpdateLead,
     handleDeleteLead,
+    handleMoveLeadStage,
     handleCreateTaskClick,
     handleCreateTask,
     showTaskDialog,
@@ -56,7 +57,7 @@ const PipelineView = () => {
     handleDragOver, 
     handleDragLeave, 
     handleDrop 
-  } = useLeadDragDrop(leads, setLeads, user, setIsLoading);
+  } = useLeadDragDrop(leads, setLeads, user, setIsLoading, handleMoveLeadStage);
   
   // Handle edit lead
   const handleEditLeadClick = (lead: any) => {

@@ -25,7 +25,7 @@ export const useLeadManagement = (
     }
   }, [user]);
   
-  // Function to load leads from local storage or mock data
+  // Function to load leads from local storage
   const loadLeads = async () => {
     try {
       setIsLoading(true);
@@ -100,7 +100,7 @@ export const useLeadManagement = (
   
   const handleUpdateLead = (updatedLead: any) => {
     const updatedLeads = leads.map(lead => 
-      lead.id === updatedLead.id ? updatedLead : lead
+      lead.id === updatedLead.id ? {...updatedLead, stage: lead.stage} : lead
     );
     saveLeads(updatedLeads);
     toast.success('Lead atualizado com sucesso!');
@@ -111,6 +111,14 @@ export const useLeadManagement = (
     saveLeads(updatedLeads);
     toast.success('Lead removido com sucesso!');
     refreshSubscriptionData();
+  };
+
+  const handleMoveLeadStage = (leadId: number, newStage: string) => {
+    const updatedLeads = leads.map(lead =>
+      lead.id === leadId ? { ...lead, stage: newStage } : lead
+    );
+    saveLeads(updatedLeads);
+    toast.success('Lead movido com sucesso!');
   };
 
   const handleCreateTaskClick = (lead: any) => {
@@ -148,6 +156,7 @@ export const useLeadManagement = (
     handleAddLead,
     handleUpdateLead,
     handleDeleteLead,
+    handleMoveLeadStage,
     handleCreateTaskClick,
     handleCreateTask,
     isLoading,

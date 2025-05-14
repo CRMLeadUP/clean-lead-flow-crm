@@ -3,19 +3,13 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/Layout/MainLayout';
 import PipelineView from '@/components/Dashboard/PipelineView';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Search, AlertTriangle, Filter } from 'lucide-react';
+import { PlusCircle, Search, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import LeadForm from '@/components/Dashboard/LeadForm';
 import { toast } from 'sonner';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Link } from 'react-router-dom';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuCheckboxItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Leads = () => {
@@ -23,11 +17,6 @@ const Leads = () => {
   const { leadsCount, leadsLimit, plan, isLoading, refreshSubscriptionData } = useSubscription();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState({
-    highValue: false,
-    recent: false,
-    noActivity: false
-  });
   const [leads, setLeads] = useState<any[]>([]);
   
   const isAtLimit = plan === 'free' && leadsCount >= leadsLimit;
@@ -78,13 +67,6 @@ const Leads = () => {
     }
   };
   
-  const handleFilterChange = (key: string) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-  
   return (
     <MainLayout>
       <div className="mb-3">
@@ -94,34 +76,6 @@ const Leads = () => {
             <p className="text-sm">Gerencie seus leads através das etapas de venda</p>
           </div>
           <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="flex items-center gap-1">
-                  <Filter size={14} />
-                  <span>Filtrar</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuCheckboxItem
-                  checked={activeFilters.highValue}
-                  onCheckedChange={() => handleFilterChange('highValue')}
-                >
-                  Alto valor ({'>'}R$5.000)
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={activeFilters.recent}
-                  onCheckedChange={() => handleFilterChange('recent')}
-                >
-                  Adicionados recentemente (7 dias)
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={activeFilters.noActivity}
-                  onCheckedChange={() => handleFilterChange('noActivity')}
-                >
-                  Sem atividade ({'>'}14 dias)
-                </DropdownMenuCheckboxItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Button onClick={() => setShowAddLeadDialog(true)} disabled={isAtLimit} size="sm">
               <PlusCircle className="mr-1 h-4 w-4" />
               Adicionar Lead

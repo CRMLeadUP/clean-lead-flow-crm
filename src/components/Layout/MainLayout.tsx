@@ -174,11 +174,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </>
               )}
             </Button>
-            <Link to="/leads">
-              <Button size="sm">
-                Adicionar Lead
-              </Button>
-            </Link>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">

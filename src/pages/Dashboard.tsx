@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/Layout/MainLayout';
 import PerformanceChart from '@/components/Dashboard/PerformanceChart';
 import SubscriptionCard from '@/components/Dashboard/SubscriptionCard';
-import { performanceMetrics } from '../data/MockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Bell, CheckCircle2, Calendar, AlertTriangle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { PlusCircle, Bell, CheckCircle2, Calendar, AlertTriangle, Filter } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { 
   DropdownMenu,
@@ -15,18 +14,77 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TaskForm from '@/components/Dashboard/TaskForm';
+import { useFilterLeads } from '@/hooks/useFilterLeads';
 
 const Dashboard = () => {
   // Use dynamic/empty data instead of mock data
   const [notificationsData, setNotificationsData] = useState([]);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
-  const { leadsCount, leadsLimit, isProUser } = useSubscription();
+  const { leadsCount, leadsLimit, isProUser, plan, refreshSubscriptionData } = useSubscription();
+  const [leads, setLeads] = useState<any[]>([]);
+  const [showAddLeadDialog, setShowAddLeadDialog] = useState(false);
+  const navigate = useNavigate();
+  
+  const { activeFilters, handleFilterChange } = useFilterLeads();
+
+  // Load leads and calculate metrics
+  useEffect(() => {
+    const loadLeads = () => {
+      const savedLeads = localStorage.getItem('leads');
+      if (savedLeads) {
+        setLeads(JSON.parse(savedLeads));
+      }
+    };
+    
+    loadLeads();
+  }, []);
+
+  // Calculate metrics based on actual lead data
+  const getMetricsBasedOnData = () => {
+    const now = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+    // Filter leads by date and stage
+    const newLeadsThisWeek = leads.filter(lead => {
+      const createdAt = new Date(lead.createdAt);
+      return createdAt >= oneWeekAgo;
+    }).length;
+    
+    const negotiationLeads = leads.filter(lead => 
+      lead.stage === 'meeting_scheduled' || lead.stage === 'proposal_sent'
+    ).length;
+    
+    const closedDeals = leads.filter(lead => lead.stage === 'closed_won').length;
+    
+    // Calculate total revenue from won deals
+    const totalRevenue = leads
+      .filter(lead => lead.stage === 'closed_won')
+      .reduce((sum, lead) => sum + (lead.expectedRevenue || 0), 0);
+    
+    // Calculate conversion rate
+    const conversionRate = leads.length > 0 
+      ? Math.round((closedDeals / leads.length) * 100) 
+      : 0;
+    
+    return {
+      totalLeads: leads.length,
+      newLeadsThisWeek,
+      negotiationStage: negotiationLeads,
+      closedDeals,
+      totalRevenue,
+      conversionRate
+    };
+  };
+
+  const metrics = getMetricsBasedOnData();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -66,41 +124,52 @@ const Dashboard = () => {
       createdAt: new Date().toISOString()
     };
     
-    setNotificationsData(prev => [newTask, ...prev]);
+    // Save task to local storage
+    const existingTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    const updatedTasks = [newTask, ...existingTasks];
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    
+    setNotificationsData(updatedTasks);
     setShowTaskDialog(false);
     toast.success('Tarefa criada com sucesso!');
   };
   
+  // Load tasks when component mounts
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+      setNotificationsData(JSON.parse(savedTasks));
+    }
+  }, []);
+  
   // Complete a task
   const completeTask = (id: number) => {
-    setNotificationsData(notifications => notifications.map(n => 
+    const updatedTasks = notificationsData.map(n => 
       n.id === id ? {...n, completed: true} : n
-    ));
+    );
+    
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    setNotificationsData(updatedTasks);
     toast.success('Tarefa marcada como concluída!');
   };
   
   // Delete a task
   const deleteTask = (id: number) => {
-    setNotificationsData(notifications => notifications.filter(n => n.id !== id));
+    const updatedTasks = notificationsData.filter(n => n.id !== id);
+    
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    setNotificationsData(updatedTasks);
     toast.success('Tarefa removida com sucesso!');
   };
   
   // Get pending notifications count
   const pendingNotifications = notificationsData.filter(n => !n.completed).length;
 
-  // Get metrics based on lead data
-  const getBasedOnUserData = () => {
-    return {
-      totalLeads: leadsCount,
-      newLeadsThisWeek: 0,
-      negotiationStage: 0, 
-      closedDeals: 0,
-      totalRevenue: 0
-    };
+  // Handle Add Lead button click
+  const handleAddLeadClick = () => {
+    navigate('/leads');
   };
 
-  const userMetrics = getBasedOnUserData();
-  
   return (
     <MainLayout>
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -109,6 +178,35 @@ const Dashboard = () => {
           <p className="text-gray-500">Bem-vindo ao seu painel de controle</p>
         </div>
         <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-1">
+                <Filter size={14} />
+                <span>Filtrar</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuCheckboxItem
+                checked={activeFilters.highValue}
+                onCheckedChange={() => handleFilterChange('highValue')}
+              >
+                Alto valor ({'>'}R$5.000)
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={activeFilters.recent}
+                onCheckedChange={() => handleFilterChange('recent')}
+              >
+                Adicionados recentemente (7 dias)
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={activeFilters.noActivity}
+                onCheckedChange={() => handleFilterChange('noActivity')}
+              >
+                Sem atividade ({'>'}14 dias)
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="relative">
@@ -220,11 +318,9 @@ const Dashboard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button asChild>
-            <Link to="/leads">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Adicionar Lead
-            </Link>
+          <Button onClick={handleAddLeadClick}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Adicionar Lead
           </Button>
         </div>
       </div>
@@ -244,21 +340,21 @@ const Dashboard = () => {
         />
         <MetricCard
           title="Novos Leads (Semana)"
-          value={userMetrics.newLeadsThisWeek}
+          value={metrics.newLeadsThisWeek}
           color="green"
           icon={PlusCircle}
           change="+8%"
         />
         <MetricCard
           title="Em Negociação"
-          value={userMetrics.negotiationStage}
+          value={metrics.negotiationStage}
           color="orange"
           icon={PlusCircle}
           change="+12%"
         />
         <MetricCard
           title="Vendas Fechadas"
-          value={userMetrics.closedDeals}
+          value={metrics.closedDeals}
           color="purple"
           icon={PlusCircle}
           change="+5%"
@@ -273,7 +369,7 @@ const Dashboard = () => {
           <CardContent className="pt-0">
             <div className="flex justify-between items-end">
               <div>
-                <p className="text-3xl font-bold">{formatCurrency(userMetrics.totalRevenue)}</p>
+                <p className="text-3xl font-bold">{formatCurrency(metrics.totalRevenue)}</p>
                 <p className="text-sm text-green-600 mt-1">+12% vs. mês passado</p>
               </div>
               <div className="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">
@@ -290,11 +386,20 @@ const Dashboard = () => {
           <CardContent className="pt-0">
             <div className="flex justify-between items-end">
               <div>
-                <p className="text-3xl font-bold">0%</p>
-                <p className="text-sm text-gray-600 mt-1">Sem dados ainda</p>
+                <p className="text-3xl font-bold">{metrics.conversionRate}%</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {metrics.conversionRate > 0 
+                    ? 'Baseado nos leads fechados' 
+                    : 'Sem dados suficientes'}
+                </p>
               </div>
-              <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-sm">
-                Sem dados
+              <div className={`${
+                metrics.conversionRate > 15 ? 'bg-green-100 text-green-800' :
+                metrics.conversionRate > 0 ? 'bg-amber-100 text-amber-800' :
+                'bg-gray-100 text-gray-600'
+              } px-3 py-1 rounded text-sm`}>
+                {metrics.conversionRate > 15 ? 'Excelente' : 
+                 metrics.conversionRate > 0 ? 'Regular' : 'Sem dados'}
               </div>
             </div>
           </CardContent>
