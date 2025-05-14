@@ -16,9 +16,13 @@ const ThemeContext = createContext<ThemeContextType>(defaultValue);
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Check if user prefers dark mode
+  const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
-    return savedTheme === 'dark';
+    // Use saved preference, or system preference if nothing saved
+    return savedTheme ? savedTheme === 'dark' : prefersDarkMode;
   });
 
   const toggleDarkMode = () => {
@@ -29,12 +33,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Save to localStorage
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     
-    // Update document class for global styling
+    // Update document class for global styling with smooth transition
+    const html = document.documentElement;
+    
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      html.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      html.classList.remove('dark');
     }
+
+    // Add a small transition delay for smoother theme change
+    html.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
+    return () => {
+      html.style.transition = '';
+    };
   }, [isDarkMode]);
 
   return (

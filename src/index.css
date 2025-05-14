@@ -39,33 +39,33 @@
   }
 
   .dark {
-    --background: 0 0% 7%;  /* #121212 */
-    --foreground: 0 0% 98%; /* Slightly off-white for better contrast */
+    --background: 0 0% 9.4%;  /* #181818 */
+    --foreground: 0 0% 87.8%; /* #E0E0E0 */
 
-    --card: 0 0% 10%;  /* Slightly lighter than background */
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 11.8%;  /* #1E1E1E */
+    --card-foreground: 0 0% 87.8%; /* #E0E0E0 */
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 11.8%; /* #1E1E1E */
+    --popover-foreground: 0 0% 87.8%; /* #E0E0E0 */
 
-    --primary: 122 39% 49%; /* #4CAF50 */
-    --primary-foreground: 0 0% 100%;
+    --primary: 212 94% 50.6%; /* #1E88E5 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --secondary: 0 0% 15%; /* Slightly lighter for better contrast */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 26%; /* #424242 */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --muted: 0 0% 15%;  /* Adjusted for better visibility */
-    --muted-foreground: 0 0% 80%; /* Brighter for better readability */
+    --muted: 0 0% 18.8%;  /* #303030 */
+    --muted-foreground: 0 0% 69%; /* #B0B0B0 */
 
     --accent: 122 39% 49%; /* #4CAF50 */
-    --accent-foreground: 0 0% 100%;
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --destructive: 0 70% 50%;  /* Brighter red for visibility */
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 65% 68%;  /* #E57373 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --border: 0 0% 20%;  /* Slightly lighter borders */
-    --input: 0 0% 20%;
-    --ring: 122 39% 49%;
+    --border: 0 0% 18.8%;  /* #303030 */
+    --input: 0 0% 18.8%; /* #303030 */
+    --ring: 212 94% 50.6%; /* #1E88E5 */
   }
 }
 
@@ -95,22 +95,54 @@
 
 /* Dark mode specific styles */
 .dark .lead-card {
-  @apply border-gray-700 bg-gray-800/80;
+  @apply border-muted bg-card/80;
 }
 
 .dark .lead-card-info {
-  @apply text-gray-200;
+  @apply text-muted-foreground;
 }
 
 /* Improve contrast in dark mode */
 .dark .text-gray-500 {
-  @apply text-gray-300;
+  @apply text-muted-foreground;
 }
 
 .dark .text-gray-700 {
-  @apply text-gray-300;
+  @apply text-foreground;
 }
 
 .dark .bg-muted {
-  @apply bg-gray-800;
+  @apply bg-muted;
+}
+
+/* Additional dark mode improvements */
+.dark .dropdown-menu {
+  @apply bg-card border-border;
+}
+
+.dark .dropdown-item {
+  @apply hover:bg-muted text-foreground;
+}
+
+/* Ensure links have proper contrast */
+.dark a:not([class]) {
+  @apply text-primary hover:text-accent;
+}
+
+/* Improved alert styles for dark mode */
+.dark .alert-success {
+  @apply bg-[#66BB6A]/20 text-[#66BB6A] border-[#66BB6A]/30;
+}
+
+.dark .alert-error {
+  @apply bg-[#E57373]/20 text-[#E57373] border-[#E57373]/30;
+}
+
+.dark .alert-warning {
+  @apply bg-[#FFB74D]/20 text-[#FFB74D] border-[#FFB74D]/30;
+}
+
+/* Enhance popover/dialog visibility in dark mode */
+.dark [data-radix-popper-content-wrapper] {
+  @apply bg-card border-border shadow-md;
 }

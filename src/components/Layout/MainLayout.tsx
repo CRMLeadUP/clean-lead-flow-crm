@@ -49,7 +49,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const showWarning = plan === 'free' && usagePercentage >= 80;
   
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'dark' : ''}`}>
+    <div className="flex h-screen">
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-40">
         <Button
@@ -74,7 +74,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <img 
                 src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
                 alt="LeadUP" 
-                className="h-24 w-auto" 
+                className={`h-24 w-auto ${isDarkMode ? 'brightness-150' : ''}`}
               />
             </Link>
           </div>
@@ -158,13 +158,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              variant="outline"
+              variant={isDarkMode ? "outline" : "default"}
               onClick={toggleDarkMode}
               className="flex items-center gap-1"
             >
               {isDarkMode ? (
                 <>
-                  <Sun size={16} />
+                  <Sun size={16} className="text-amber-400" />
                   <span className="hidden sm:inline">Tema Claro</span>
                 </>
               ) : (
