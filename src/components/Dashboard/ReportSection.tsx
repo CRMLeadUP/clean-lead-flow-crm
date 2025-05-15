@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { FileText, Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 
 interface ReportSectionProps {
   totalLeads: number;
@@ -15,32 +17,120 @@ interface ReportSectionProps {
 
 const ReportSection = ({ totalLeads, newLeadsThisWeek, totalRevenue, conversionRate }: ReportSectionProps) => {
   const [activeReport, setActiveReport] = useState('overview');
-
-  // Sample data for the charts
-  const monthlyData = [
-    { name: 'Jan', leads: 42, revenue: 15000, conversion: 22 },
-    { name: 'Fev', leads: 52, revenue: 18500, conversion: 23 },
-    { name: 'Mar', leads: 59, revenue: 21000, conversion: 24 },
-    { name: 'Abr', leads: 63, revenue: 22500, conversion: 24 },
-    { name: 'Mai', leads: 73, revenue: 28000, conversion: 25 },
-    { name: 'Jun', leads: 89, revenue: 32000, conversion: 27 },
-    { name: 'Jul', leads: 102, revenue: 36000, conversion: 28 },
-    { name: 'Ago', leads: 116, revenue: 42000, conversion: 29 },
-    { name: 'Set', leads: 131, revenue: 46000, conversion: 30 },
-    { name: 'Out', leads: 142, revenue: 47000, conversion: 28 },
-    { name: 'Nov', leads: 153, revenue: 48250, conversion: 24.8 },
-    { name: 'Dez', leads: 0, revenue: 0, conversion: 0 },
-  ];
+  const { metrics } = useDashboardMetrics();
   
-  const weeklyData = [
-    { name: 'Sem 1', leads: 35, revenue: 11000, conversion: 22 },
-    { name: 'Sem 2', leads: 38, revenue: 12500, conversion: 24 },
-    { name: 'Sem 3', leads: 40, revenue: 12800, conversion: 25 },
-    { name: 'Sem 4', leads: 40, revenue: 12000, conversion: 26 },
-  ];
+  // Generate monthly data based on actual leads
+  const generateMonthlyData = () => {
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const currentMonth = new Date().getMonth();
+    
+    // Get leads from localStorage
+    const savedLeads = localStorage.getItem('leads');
+    const allLeads = savedLeads ? JSON.parse(savedLeads) : [];
+    
+    return months.map((month, index) => {
+      // Metrics for completed months use actual data
+      // Future months have no data
+      if (index > currentMonth) {
+        return {
+          name: month,
+          leads: 0, 
+          revenue: 0, 
+          conversion: 0
+        };
+      }
+      
+      // Filter leads for this month
+      const monthLeads = allLeads.filter((lead: any) => {
+        const leadDate = new Date(lead.createdAt);
+        return leadDate.getMonth() === index;
+      });
+      
+      // Calculate metrics for this month
+      const monthRevenue = monthLeads
+        .filter((lead: any) => lead.stage === 'closed_won')
+        .reduce((sum: number, lead: any) => sum + (lead.expectedRevenue || 0), 0);
+        
+      const closedDeals = monthLeads.filter((lead: any) => lead.stage === 'closed_won').length;
+      const conversionRate = monthLeads.length > 0 
+        ? Math.round((closedDeals / monthLeads.length) * 100) 
+        : 0;
+      
+      return {
+        name: month,
+        leads: monthLeads.length,
+        revenue: monthRevenue,
+        conversion: conversionRate
+      };
+    });
+  };
+  
+  // Generate weekly data based on actual leads
+  const generateWeeklyData = () => {
+    const weekNames = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    
+    // Get leads from localStorage
+    const savedLeads = localStorage.getItem('leads');
+    const allLeads = savedLeads ? JSON.parse(savedLeads) : [];
+    
+    return weekNames.map((weekName, index) => {
+      // Calculate start and end dates for this week
+      const startDate = new Date(currentYear, currentMonth, 1 + (index * 7));
+      const endDate = new Date(currentYear, currentMonth, 7 + (index * 7));
+      
+      // Filter leads for this week
+      const weekLeads = allLeads.filter((lead: any) => {
+        const leadDate = new Date(lead.createdAt);
+        return leadDate >= startDate && leadDate <= endDate;
+      });
+      
+      // Calculate metrics for this week
+      const weekRevenue = weekLeads
+        .filter((lead: any) => lead.stage === 'closed_won')
+        .reduce((sum: number, lead: any) => sum + (lead.expectedRevenue || 0), 0);
+        
+      const closedDeals = weekLeads.filter((lead: any) => lead.stage === 'closed_won').length;
+      const conversionRate = weekLeads.length > 0 
+        ? Math.round((closedDeals / weekLeads.length) * 100) 
+        : 0;
+      
+      return {
+        name: weekName,
+        leads: weekLeads.length,
+        revenue: weekRevenue,
+        conversion: conversionRate
+      };
+    });
+  };
 
+  const monthlyData = generateMonthlyData();
+  const weeklyData = generateWeeklyData();
+  
   const handleExportReport = () => {
-    alert('Relatório exportado com sucesso!');
+    // Generate report data
+    const data = activeReport === 'weekly' ? weeklyData : monthlyData;
+    
+    // Convert data to CSV format
+    let csv = 'Período,Leads,Receita,Conversão\n';
+    data.forEach(item => {
+      csv += `${item.name},${item.leads},${item.revenue},${item.conversion}%\n`;
+    });
+    
+    // Create a downloadable link
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `relatorio-${activeReport === 'weekly' ? 'semanal' : 'mensal'}.csv`);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    toast.success('Relatório exportado com sucesso!');
   };
 
   const renderChart = () => {

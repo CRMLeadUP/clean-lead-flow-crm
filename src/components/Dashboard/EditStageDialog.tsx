@@ -1,13 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { pipelineStages } from '@/data/MockData';
 import { CirclePlus, Trash2, MoveVertical, Save } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 
 interface EditStageDialogProps {
   open: boolean;
@@ -15,7 +13,17 @@ interface EditStageDialogProps {
 }
 
 const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange }) => {
-  const [stages, setStages] = useState([...pipelineStages]);
+  // Load stages from localStorage if available, otherwise use default pipelineStages
+  const [stages, setStages] = useState<any[]>([]);
+  
+  useEffect(() => {
+    const savedStages = localStorage.getItem('pipelineStages');
+    if (savedStages) {
+      setStages(JSON.parse(savedStages));
+    } else {
+      setStages([...pipelineStages]);
+    }
+  }, [open]);
   
   const handleNameChange = (index: number, newName: string) => {
     const updatedStages = [...stages];
@@ -24,7 +32,7 @@ const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange })
   };
   
   const addNewStage = () => {
-    const newStageId = `stage_${stages.length + 1}`;
+    const newStageId = `stage_${Date.now()}`;
     setStages([
       ...stages, 
       { 
@@ -67,9 +75,41 @@ const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange })
   };
   
   const handleSave = () => {
-    // In a real app, this would save to the database
-    toast.success("Etapas do funil atualizadas");
+    // Save to localStorage
+    localStorage.setItem('pipelineStages', JSON.stringify(stages));
+    
+    // Notify user
+    toast.success("Etapas do funil atualizadas com sucesso!");
+    
+    // Update all leads that might be affected by stage changes
+    const savedLeads = localStorage.getItem('leads');
+    if (savedLeads) {
+      const leads = JSON.parse(savedLeads);
+      
+      // Get removed stage IDs
+      const currentStageIds = stages.map(stage => stage.id);
+      const existingStageIds = pipelineStages.map(stage => stage.id);
+      const removedStageIds = existingStageIds.filter(id => !currentStageIds.includes(id));
+      
+      // If any stage was removed, move leads to first stage
+      if (removedStageIds.length > 0 && stages.length > 0) {
+        const defaultStage = stages[0].id;
+        const updatedLeads = leads.map((lead: any) => {
+          if (removedStageIds.includes(lead.stage)) {
+            return { ...lead, stage: defaultStage };
+          }
+          return lead;
+        });
+        
+        localStorage.setItem('leads', JSON.stringify(updatedLeads));
+      }
+    }
+    
+    // Close the dialog
     onOpenChange(false);
+    
+    // Force page reload to apply changes
+    window.location.reload();
   };
   
   return (
@@ -151,7 +191,7 @@ const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange })
 
 // Helper function to convert Tailwind color names to CSS values
 const getColorValue = (colorName: string): string => {
-  const colorMap = {
+  const colorMap: {[key: string]: string} = {
     'blue': '#3b82f6',
     'green': '#10b981',
     'amber': '#f59e0b',

@@ -8,17 +8,18 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { 
   LayoutDashboard, 
   Users, 
+  FileText, 
+  CheckSquare, 
   Settings, 
   LogOut, 
   Menu, 
-  X, 
-  CreditCard,
-  AlertTriangle,
-  Moon,
-  Sun,
-  FileBarChart,
-  ListChecks
+  Moon, 
+  Sun, 
+  Bell, 
+  ArrowRight
 } from 'lucide-react';
+import { NavigationItems } from '@/data/MockData';
+import { Badge } from '@/components/ui/badge';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,43 +27,41 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { signOut } = useAuth();
-  const { leadsCount, leadsLimit, usagePercentage, plan } = useSubscription();
-  const { isDarkMode, toggleDarkMode } = useTheme();
-  const location = useLocation();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { plan, leadsCount, leadsLimit } = useSubscription();
   
-  const isActive = (path: string) => location.pathname === path;
-  
-  const navItems = [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
-    { icon: <Users size={20} />, label: 'Leads', path: '/leads' },
-    { icon: <CreditCard size={20} />, label: 'Assinatura', path: '/subscription' },
-    { icon: <FileBarChart size={20} />, label: 'Relatórios', path: '/reports' },
-    { icon: <ListChecks size={20} />, label: 'Tarefas', path: '/tasks' },
-    { icon: <Settings size={20} />, label: 'Configurações', path: '/profile' },
-  ];
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
   
   const handleSignOut = async () => {
     await signOut();
     navigate('/login');
   };
   
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  // Calculate lead usage percentage
+  const usagePercentage = leadsLimit > 0 ? (leadsCount / leadsLimit) * 100 : 0;
   
-  const showWarning = plan === 'free' && usagePercentage >= 80;
-  
+  // Badge color based on percentage
+  const getBadgeColor = () => {
+    if (usagePercentage >= 90) return "bg-red-500";
+    if (usagePercentage >= 70) return "bg-amber-500";
+    return "bg-green-500";
+  };
+
   return (
-    <div className="flex h-screen bg-background">
-      {/* Mobile sidebar toggle */}
-      <div className="lg:hidden fixed top-4 left-4 z-40">
-        <Button
-          variant="outline"
+    <div className="min-h-screen bg-background">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-20 p-4 bg-background border-b flex justify-between items-center">
+        <Button 
+          variant="ghost" 
           size="icon"
-          onClick={toggleSidebar}
-          className="rounded-full bg-background shadow-sm"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="lg:hidden"
         >
-          {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+          <Menu className="h-6 w-6" />
         </Button>
       </div>
       
@@ -78,32 +77,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <img 
                 src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
                 alt="LeadUP" 
-                className="h-10 w-auto"
+                className="h-14 w-auto" // Increased logo size
               />
               {/* Removed text "LeadUP" */}
             </Link>
           </div>
           
-          <div className="flex-1 overflow-auto py-4 px-3">
-            <nav className="space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary text-white font-medium'
-                      : 'text-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  {item.icon}
-                  <span className="ml-3">{item.label}</span>
-                  
-                  {item.label === 'Assinatura' && showWarning && (
-                    <AlertTriangle size={16} className="ml-2 text-amber-500" />
-                  )}
-                </Link>
+          <div className="flex-grow overflow-y-auto">
+            <nav className="px-2 py-4">
+              {NavigationItems.map((item, index) => (
+                <div key={index} className="mb-1">
+                  <Link
+                    to={item.path}
+                    className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
+                      isActive(item.path)
+                        ? 'bg-primary text-white font-medium'
+                        : 'text-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    {item.icon}
+                    <span className="ml-3">{item.name}</span>
+                    
+                    {item.path === "/leads" && leadsCount > 0 && (
+                      <Badge variant="outline" className="ml-auto">
+                        {leadsCount}
+                      </Badge>
+                    )}
+                  </Link>
+                </div>
               ))}
             </nav>
             
@@ -120,16 +122,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                       usagePercentage >= 90 ? 'bg-red-500' : 
                       usagePercentage >= 70 ? 'bg-amber-500' : 'bg-green-500'
                     }`}
-                    style={{ width: `${usagePercentage}%` }}
+                    style={{ width: `${Math.min(100, usagePercentage)}%` }}
                   ></div>
                 </div>
-                {usagePercentage >= 80 && (
-                  <Link
-                    to="/subscription"
-                    className="text-xs flex items-center text-primary mt-2"
-                  >
-                    <span>Faça upgrade para o plano PRO</span>
-                  </Link>
+                
+                {usagePercentage >= 70 && (
+                  <div className="mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full text-xs"
+                      onClick={() => navigate('/subscription')}
+                    >
+                      Upgrade para PRO
+                      <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
@@ -148,33 +156,49 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
       </div>
       
-      {/* Mobile overlay */}
+      {/* Overlay */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+        <div 
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
       
-      {/* Main content */}
-      <div className="flex-1 flex flex-col lg:ml-64">
-        <header className="bg-white dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      {/* Main Content */}
+      <div className="lg:ml-64">
+        <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
-            <input 
-              type="text"
-              placeholder="Buscar..."
-              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 w-64"
-            />
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
           </div>
-          <div className="flex items-center gap-4">
-            <Button
-              size="sm"
-              variant="ghost"
+          
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="rounded-full"
+              onClick={() => navigate('/profile')}
+            >
+              <span className="relative flex h-6 w-6 shrink-0 overflow-hidden rounded-full bg-muted">
+                <span className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+                  {user?.email?.charAt(0).toUpperCase()}
+                </span>
+              </span>
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
               onClick={toggleDarkMode}
-              className="flex items-center gap-1"
             >
               {isDarkMode ? (
-                <Sun size={18} className="text-amber-400" />
+                <Sun size={18} />
               ) : (
                 <Moon size={18} />
               )}

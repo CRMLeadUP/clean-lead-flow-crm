@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { pipelineStages } from '@/data/MockData';
 import PipelineColumn from '@/components/ui/PipelineColumn';
 
@@ -32,9 +32,19 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
   isLoading,
   onEditStage
 }) => {
+  const [stages, setStages] = useState(pipelineStages);
+  
+  useEffect(() => {
+    // Load custom stages from localStorage if available
+    const savedStages = localStorage.getItem('pipelineStages');
+    if (savedStages) {
+      setStages(JSON.parse(savedStages));
+    }
+  }, []);
+  
   return (
     <div className="flex space-x-2 p-1 min-w-max">
-      {pipelineStages.map((stage) => {
+      {stages.map((stage) => {
         const stageLeads = leads.filter(lead => lead.stage === stage.id);
         
         return (

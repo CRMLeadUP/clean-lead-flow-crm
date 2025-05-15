@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users, BarChart2, CircleDollarSign, Percent } from 'lucide-react';
+import { Users, BarChart2, CircleDollarSign, Percent, CheckSquare } from 'lucide-react';
 import MetricCard from './MetricCard';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 
@@ -12,6 +12,7 @@ interface MetricsSectionProps {
     closedDeals: number;
     totalRevenue: number;
     conversionRate: number;
+    pendingTasks: number;
   };
   leadsCount: number;
   leadsLimit: number;
@@ -36,9 +37,9 @@ const MetricsSection = ({ metrics, leadsCount, leadsLimit }: MetricsSectionProps
       />
       <MetricCard
         title="Tarefas Pendentes"
-        value={metrics.negotiationStage}
+        value={metrics.pendingTasks}
         change="+12%"
-        icon={<Percent className="h-6 w-6 text-orange-600 dark:text-orange-400" />}
+        icon={<CheckSquare className="h-6 w-6 text-orange-600 dark:text-orange-400" />}
         iconBackground="bg-orange-100 dark:bg-orange-900/30"
       />
       <MetricCard

@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { weeklyPerformance } from '../../data/MockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 
 const PerformanceChart = () => {
+  const { metrics } = useDashboardMetrics();
+  
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -13,7 +15,7 @@ const PerformanceChart = () => {
       <CardContent>
         <div className="h-[240px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weeklyPerformance} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+            <BarChart data={metrics.weeklyPerformance} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis fontSize={12} tickLine={false} axisLine={false} />

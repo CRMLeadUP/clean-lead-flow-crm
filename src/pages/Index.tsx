@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,8 @@ import { CheckCircle, ChevronRight, CreditCard, Users, BarChart3 } from 'lucide-
 import { useTheme } from '@/contexts/ThemeContext';
 
 const Index = () => {
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
+  // Remove toggleDarkMode since we're removing the button
   
   const features = [
     {
@@ -46,9 +48,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="flex gap-4 items-center">
-            <Button variant="ghost" onClick={toggleDarkMode} size="sm" className="mr-2">
-              {isDarkMode ? 'Tema Claro' : 'Tema Escuro'}
-            </Button>
+            {/* Removed dark theme toggle button */}
             <Link to="/login">
               <Button variant="outline">Entrar</Button>
             </Link>

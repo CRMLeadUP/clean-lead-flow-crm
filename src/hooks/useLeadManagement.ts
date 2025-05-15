@@ -69,13 +69,14 @@ export const useLeadManagement = (
         return;
       }
       
-      // Create new lead object
+      // Create new lead object with a more reliable ID
       const newLead = {
-        id: Date.now(), // Use timestamp for unique ID to prevent collisions
+        id: Date.now() + Math.floor(Math.random() * 1000), // More unique ID to prevent collisions
         ...leadData,
         stage: currentStageId || 'new_leads',
         createdAt: new Date().toISOString(),
-        lastContact: new Date().toISOString()
+        lastContact: new Date().toISOString(),
+        expectedRevenue: leadData.expectedRevenue ? Number(leadData.expectedRevenue) : 0
       };
       
       // Add the lead to the leads array and persist it
@@ -85,7 +86,12 @@ export const useLeadManagement = (
       
       // Refresh subscription data to update lead count
       await refreshSubscriptionData();
+      
+      // Immediate feedback to user
       toast.success('Lead adicionado com sucesso!');
+      
+      // Force refresh of the component
+      loadLeads();
     } catch (error: any) {
       if (error.message && error.message.includes('cannot create more than')) {
         toast.error('Você atingiu seu limite de leads. Faça upgrade para o plano PRO.');
