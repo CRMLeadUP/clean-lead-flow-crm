@@ -19,7 +19,15 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check if user prefers dark mode
   const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const location = useLocation();
+  
+  // Only use useLocation if it's available (inside a Router)
+  let pathname = '/';
+  try {
+    const location = useLocation();
+    pathname = location.pathname;
+  } catch (error) {
+    console.warn('ThemeProvider: useLocation is not available, using default path');
+  }
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -54,10 +62,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Reset to light mode on the landing page
   useEffect(() => {
-    if (location.pathname === '/') {
+    if (pathname === '/') {
       setIsDarkMode(false);
     }
-  }, [location.pathname]);
+  }, [pathname]);
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>

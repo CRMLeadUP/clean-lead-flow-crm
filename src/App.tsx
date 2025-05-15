@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from './contexts/AuthContext';
 import { SubscriptionProvider } from './contexts/SubscriptionContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -24,25 +25,27 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <AuthProvider>
-          <SubscriptionProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/leads" element={<Leads />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/subscription" element={<Subscription />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </SubscriptionProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <SubscriptionProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/leads" element={<Leads />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/subscription" element={<Subscription />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/tasks" element={<Tasks />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SubscriptionProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
