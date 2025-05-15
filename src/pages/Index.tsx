@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -38,10 +37,11 @@ const Index = () => {
         <div className="container max-w-screen-xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <Link to="/">
+              {/* Increased logo size significantly */}
               <img 
                 src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
                 alt="LeadUP Logo" 
-                className="h-14 w-auto"
+                className="h-24 w-auto" 
               />
             </Link>
           </div>

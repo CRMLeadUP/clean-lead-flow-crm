@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -65,21 +66,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </Button>
       </div>
       
-      {/* Sidebar */}
+      {/* Sidebar - Changed background to white/background color */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-gray-900 dark:bg-gray-900 text-white lg:translate-x-0 transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-background dark:bg-background text-foreground lg:translate-x-0 transition-transform duration-200 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        } border-r border-border`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-center h-20 border-b border-gray-800">
+          <div className="flex items-center justify-center h-20 border-b border-border">
             <Link to="/dashboard" className="flex items-center justify-center">
               <img 
                 src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
                 alt="LeadUP" 
-                className="h-10 w-auto brightness-200"
+                className="h-10 w-auto"
               />
-              <span className="ml-2 text-xl font-bold text-white">LeadUP</span>
+              {/* Removed text "LeadUP" */}
             </Link>
           </div>
           
@@ -92,7 +93,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
                     isActive(item.path)
                       ? 'bg-primary text-white font-medium'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'text-foreground hover:bg-muted hover:text-foreground'
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -108,12 +109,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             
             {/* Lead usage for free users */}
             {plan === 'free' && (
-              <div className="mt-6 mx-4 p-3 bg-gray-800 rounded-lg">
+              <div className="mt-6 mx-4 p-3 bg-muted rounded-lg">
                 <div className="flex justify-between items-center text-sm mb-1">
-                  <span className="text-gray-300">Uso de Leads</span>
-                  <span className="text-gray-300 font-medium">{leadsCount}/{leadsLimit}</span>
+                  <span className="text-foreground">Uso de Leads</span>
+                  <span className="text-foreground font-medium">{leadsCount}/{leadsLimit}</span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-background rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full ${
                       usagePercentage >= 90 ? 'bg-red-500' : 
@@ -134,11 +135,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             )}
           </div>
           
-          <div className="p-4 border-t border-gray-800">
+          <div className="p-4 border-t border-border">
             <Button
               variant="ghost"
               onClick={handleSignOut}
-              className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-800"
+              className="w-full justify-start text-foreground hover:text-foreground hover:bg-muted"
             >
               <LogOut size={18} className="mr-2" />
               Sair
@@ -178,9 +179,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 <Moon size={18} />
               )}
             </Button>
-            <Button className="bg-primary hover:bg-primary/90">
-              Novo Lead
-            </Button>
+            {/* Removed "Novo Lead" button */}
           </div>
         </header>
         <main className="flex-1 overflow-y-auto bg-background">
