@@ -1,36 +1,33 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface MetricCardProps {
   title: string;
   value: string | number;
-  color: string;
-  icon?: React.ElementType;
   change?: string;
+  icon?: React.ReactNode;
+  iconBackground?: string;
 }
 
-const MetricCard = ({ title, value, color, icon: Icon, change }: MetricCardProps) => (
-  <Card className={`border-${color}-100`}>
-    <CardContent className="p-6">
-      <div className="flex justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold mt-1">{value}</p>
-          {change && (
-            <p className={`text-xs ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'} mt-1`}>
-              {change} vs. mês passado
-            </p>
-          )}
-        </div>
-        {Icon && (
-          <div className={`h-12 w-12 rounded-full bg-${color}-100 flex items-center justify-center`}>
-            <Icon className={`h-6 w-6 text-${color}-600`} />
-          </div>
+const MetricCard = ({ title, value, change, icon, iconBackground }: MetricCardProps) => (
+  <div className="bg-card border rounded-lg shadow-sm p-6">
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm text-muted-foreground">{title}</p>
+        <p className="text-3xl font-bold mt-2">{value}</p>
+        {change && (
+          <p className={`text-xs ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'} mt-1`}>
+            {change} vs. mês anterior
+          </p>
         )}
       </div>
-    </CardContent>
-  </Card>
+      {icon && (
+        <div className={`h-12 w-12 rounded-full ${iconBackground || 'bg-blue-100 dark:bg-blue-900/30'} flex items-center justify-center`}>
+          {icon}
+        </div>
+      )}
+    </div>
+  </div>
 );
 
 export default MetricCard;

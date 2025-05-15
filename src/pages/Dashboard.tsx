@@ -13,14 +13,16 @@ import MetricsSection from '@/components/Dashboard/MetricsSection';
 import RevenueCards from '@/components/Dashboard/RevenueCards';
 import PendingTasksList from '@/components/Dashboard/PendingTasksList';
 import RecommendedActions from '@/components/Dashboard/RecommendedActions';
+import ReportSection from '@/components/Dashboard/ReportSection';
 import { AlertTriangle, Calendar, CheckCircle2, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Dashboard = () => {
-  // Use dynamic/empty data instead of mock data
   const [notificationsData, setNotificationsData] = useState([]);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState('pipeline');
   const { leadsCount, leadsLimit, isProUser, plan, refreshSubscriptionData } = useSubscription();
   const [leads, setLeads] = useState<any[]>([]);
   const [showAddLeadDialog, setShowAddLeadDialog] = useState(false);
@@ -88,7 +90,9 @@ const Dashboard = () => {
       date: taskData.dueDate ? new Date(taskData.dueDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       priority: taskData.priority,
       completed: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      leadId: taskData.leadId || null,
+      leadName: taskData.leadName || null
     };
     
     // Save task to local storage
@@ -132,130 +136,74 @@ const Dashboard = () => {
   // Get pending notifications count
   const pendingNotifications = notificationsData.filter(n => !n.completed).length;
 
-  // Render dropdown menu notifications content
-  const renderNotificationsContent = () => {
-    if (notificationsData.length === 0) {
-      return (
-        <div className="py-4 text-center text-sm text-gray-500">
-          <AlertTriangle className="h-5 w-5 mx-auto mb-1 text-gray-400" />
-          <p>Nenhuma tarefa para exibir</p>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setShowTaskDialog(true)}
-            className="mt-2"
-          >
-            <PlusCircle className="h-3 w-3 mr-1" />
-            Criar Tarefa
-          </Button>
-        </div>
-      );
-    }
-
-    return notificationsData.map((notification) => (
-      <div key={notification.id} className="flex flex-col items-start p-0">
-        <div className="flex w-full items-start p-3 hover:bg-transparent">
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <span className={`font-medium ${notification.completed ? 'text-gray-400 line-through' : ''}`}>
-                {notification.title}
-              </span>
-              {notification.priority === 'high' && (
-                <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
-                  Alta
-                </Badge>
-              )}
-              {notification.priority === 'medium' && (
-                <Badge variant="outline" className="ml-2 bg-amber-50 text-amber-700 border-amber-200">
-                  Média
-                </Badge>
-              )}
-              {notification.completed && (
-                <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
-                  Concluída
-                </Badge>
-              )}
-            </div>
-            <p className="text-sm text-gray-500 mt-1">{notification.description}</p>
-            <div className="flex justify-between items-center mt-2">
-              <span className="text-xs text-gray-400 flex items-center">
-                <Calendar className="h-3 w-3 mr-1" />
-                {notification.date}
-              </span>
-              <div className="flex gap-1">
-                {!notification.completed && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 p-0 text-xs text-green-600 hover:text-green-700 hover:bg-transparent"
-                    onClick={() => completeTask(notification.id)}
-                  >
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    Concluir
-                  </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 p-0 text-xs text-red-600 hover:text-red-700 hover:bg-transparent"
-                  onClick={() => deleteTask(notification.id)}
-                >
-                  Remover
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-        {notification.id !== notificationsData[notificationsData.length - 1].id && <hr className="w-full" />}
-      </div>
-    ));
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
   };
 
   return (
     <MainLayout>
-      <DashboardHeader
-        pendingNotifications={pendingNotifications}
-        activeFilters={activeFilters}
-        onFilterChange={handleFilterChange}
-        onTaskDialogOpen={() => setShowTaskDialog(true)}
-        onNotificationComplete={completeTask}
-        onNotificationDelete={deleteTask}
-        notifications={notificationsData}
-      />
+      <div className="p-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold mb-1">Bem-vindo ao LeadUP CRM!</h1>
+          <p className="text-muted-foreground">Pronto para alavancar seus resultados?</p>
+        </div>
 
-      {/* Lead Usage Card */}
-      <div className="mb-8">
-        <SubscriptionCard />
-      </div>
-      
-      {/* Metrics Cards */}
-      <MetricsSection 
-        metrics={metrics} 
-        leadsCount={leadsCount} 
-        leadsLimit={leadsLimit} 
-      />
-      
-      {/* Revenue and Conversion Cards */}
-      <RevenueCards 
-        totalRevenue={metrics.totalRevenue} 
-        conversionRate={metrics.conversionRate} 
-      />
-      
-      {/* Performance Chart */}
-      <PerformanceChart />
-      
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <RecommendedActions onOpenTaskDialog={() => setShowTaskDialog(true)} />
+        <DashboardHeader
+          pendingNotifications={pendingNotifications}
+          activeFilters={activeFilters}
+          onFilterChange={handleFilterChange}
+          onTaskDialogOpen={() => setShowTaskDialog(true)}
+          onNotificationComplete={completeTask}
+          onNotificationDelete={deleteTask}
+          notifications={notificationsData}
+        />
+
+        {/* Lead Usage Card */}
+        <div className="mb-8">
+          <SubscriptionCard />
         </div>
         
-        <div>
-          <PendingTasksList 
-            tasks={notificationsData} 
-            onOpenTaskDialog={() => setShowTaskDialog(true)}
-            onCompleteTask={completeTask}
-          />
-        </div>
+        {/* Metrics Cards */}
+        <MetricsSection 
+          metrics={metrics} 
+          leadsCount={leadsCount} 
+          leadsLimit={leadsLimit} 
+        />
+        
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
+            <TabsTrigger value="reports">Relatórios</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="pipeline" className="space-y-6">
+            {/* Performance Chart */}
+            <PerformanceChart />
+            
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <RecommendedActions onOpenTaskDialog={() => setShowTaskDialog(true)} />
+              </div>
+              
+              <div>
+                <PendingTasksList 
+                  tasks={notificationsData} 
+                  onOpenTaskDialog={() => setShowTaskDialog(true)}
+                  onCompleteTask={completeTask}
+                />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="reports">
+            <ReportSection
+              totalLeads={metrics.totalLeads}
+              newLeadsThisWeek={metrics.newLeadsThisWeek}
+              totalRevenue={metrics.totalRevenue}
+              conversionRate={metrics.conversionRate}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
       
       {/* Task Dialog */}

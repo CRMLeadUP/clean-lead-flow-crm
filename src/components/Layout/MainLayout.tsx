@@ -15,7 +15,8 @@ import {
   CreditCard,
   AlertTriangle,
   Moon,
-  Sun
+  Sun,
+  FileCog
 } from 'lucide-react';
 
 interface MainLayoutProps {
@@ -36,7 +37,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <Users size={20} />, label: 'Leads', path: '/leads' },
     { icon: <CreditCard size={20} />, label: 'Assinatura', path: '/subscription' },
-    { icon: <Settings size={20} />, label: 'Perfil', path: '/profile' },
+    { icon: <Settings size={20} />, label: 'Configurações', path: '/profile' },
   ];
   
   const handleSignOut = async () => {
@@ -49,7 +50,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const showWarning = plan === 'free' && usagePercentage >= 80;
   
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-background">
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-40">
         <Button
@@ -64,18 +65,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-background border-r border-border lg:translate-x-0 transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-gray-900 dark:bg-gray-900 text-white lg:translate-x-0 transition-transform duration-200 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-center h-28 border-b border-border">
+          <div className="flex items-center justify-center h-20 border-b border-gray-800">
             <Link to="/dashboard" className="flex items-center justify-center">
               <img 
-                src="/lovable-uploads/dac53d45-87fa-4976-8c80-2ef55ca2b99b.png" 
+                src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
                 alt="LeadUP" 
-                className={`h-24 w-auto ${isDarkMode ? 'brightness-150' : ''}`}
+                className="h-10 w-auto brightness-200"
               />
+              <span className="ml-2 text-xl font-bold text-white">LeadUP</span>
             </Link>
           </div>
           
@@ -87,8 +89,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   to={item.path}
                   className={`flex items-center px-4 py-3 text-sm rounded-md transition-colors ${
                     isActive(item.path)
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-foreground hover:bg-muted'
+                      ? 'bg-primary text-white font-medium'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -104,12 +106,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             
             {/* Lead usage for free users */}
             {plan === 'free' && (
-              <div className="mt-6 mx-4 p-3 bg-muted rounded-lg">
+              <div className="mt-6 mx-4 p-3 bg-gray-800 rounded-lg">
                 <div className="flex justify-between items-center text-sm mb-1">
-                  <span>Uso de Leads</span>
-                  <span className="font-medium">{leadsCount}/{leadsLimit}</span>
+                  <span className="text-gray-300">Uso de Leads</span>
+                  <span className="text-gray-300 font-medium">{leadsCount}/{leadsLimit}</span>
                 </div>
-                <div className="w-full bg-secondary rounded-full h-2">
+                <div className="w-full bg-gray-700 rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full ${
                       usagePercentage >= 90 ? 'bg-red-500' : 
@@ -130,11 +132,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             )}
           </div>
           
-          <div className="p-4 border-t border-border">
+          <div className="p-4 border-t border-gray-800">
             <Button
-              variant="outline"
+              variant="ghost"
               onClick={handleSignOut}
-              className="w-full justify-start"
+              className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-800"
             >
               <LogOut size={18} className="mr-2" />
               Sair
@@ -153,31 +155,34 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       
       {/* Main content */}
       <div className="flex-1 flex flex-col lg:ml-64">
-        <header className="px-6 py-3 border-b border-border flex justify-between items-center">
-          <h1 className="text-lg font-semibold">LeadUP CRM</h1>
-          <div className="flex items-center gap-2">
+        <header className="bg-white dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <div className="flex items-center">
+            <input 
+              type="text"
+              placeholder="Buscar..."
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 w-64"
+            />
+          </div>
+          <div className="flex items-center gap-4">
             <Button
               size="sm"
-              variant={isDarkMode ? "outline" : "default"}
+              variant="ghost"
               onClick={toggleDarkMode}
               className="flex items-center gap-1"
             >
               {isDarkMode ? (
-                <>
-                  <Sun size={16} className="text-amber-400" />
-                  <span className="hidden sm:inline">Tema Claro</span>
-                </>
+                <Sun size={18} className="text-amber-400" />
               ) : (
-                <>
-                  <Moon size={16} />
-                  <span className="hidden sm:inline">Tema Escuro</span>
-                </>
+                <Moon size={18} />
               )}
+            </Button>
+            <Button className="bg-primary hover:bg-primary/90">
+              Novo Lead
             </Button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="container mx-auto">{children}</div>
+        <main className="flex-1 overflow-y-auto bg-background">
+          {children}
         </main>
       </div>
     </div>

@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 type ThemeContextType = {
   isDarkMode: boolean;
@@ -18,6 +19,7 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check if user prefers dark mode
   const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const location = useLocation();
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -49,6 +51,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       html.style.transition = '';
     };
   }, [isDarkMode]);
+
+  // Reset to light mode on the landing page
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setIsDarkMode(false);
+    }
+  }, [location.pathname]);
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>

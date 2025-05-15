@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -32,7 +33,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <header className="py-4 px-6 md:px-10 border-b bg-background">
         <div className="container max-w-screen-xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
@@ -40,7 +41,7 @@ const Index = () => {
               <img 
                 src="/lovable-uploads/2b08e099-de56-4441-81b8-8aef38388b0e.png" 
                 alt="LeadUP Logo" 
-                className="h-28 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
           </div>
@@ -157,10 +158,6 @@ const Index = () => {
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                     <span>Relatórios simples (1 relatório mensal)</span>
                   </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                    <span>1 usuário único</span>
-                  </li>
                 </ul>
                 <Button variant="outline" className="w-full mt-6">
                   <Link to="/signup" className="w-full">Começar Grátis</Link>
@@ -197,10 +194,6 @@ const Index = () => {
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                     <span>Integração com WhatsApp</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                    <span>1 usuário único</span>
                   </li>
                 </ul>
                 <Button className="w-full mt-6">
@@ -239,10 +232,6 @@ const Index = () => {
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                     <span>Priorização no suporte</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                    <span>1 usuário único</span>
                   </li>
                 </ul>
                 <Button variant="outline" className="w-full mt-6">
