@@ -12,6 +12,8 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Profile from "./pages/Profile";
+import Reports from "./pages/Reports";
+import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
 import Subscription from "./pages/Subscription";
@@ -35,6 +37,8 @@ const App = () => (
               <Route path="/leads" element={<Leads />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/subscription" element={<Subscription />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/tasks" element={<Tasks />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </SubscriptionProvider>

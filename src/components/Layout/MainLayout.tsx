@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,8 @@ import {
   AlertTriangle,
   Moon,
   Sun,
-  FileCog
+  FileBarChart,
+  ListChecks
 } from 'lucide-react';
 
 interface MainLayoutProps {
@@ -37,6 +37,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <Users size={20} />, label: 'Leads', path: '/leads' },
     { icon: <CreditCard size={20} />, label: 'Assinatura', path: '/subscription' },
+    { icon: <FileBarChart size={20} />, label: 'Relatórios', path: '/reports' },
+    { icon: <ListChecks size={20} />, label: 'Tarefas', path: '/tasks' },
     { icon: <Settings size={20} />, label: 'Configurações', path: '/profile' },
   ];
   

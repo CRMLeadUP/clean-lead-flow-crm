@@ -7,13 +7,14 @@ import MetricsSection from '@/components/Dashboard/MetricsSection';
 import SubscriptionCard from '@/components/Dashboard/SubscriptionCard';
 import TaskDialog from '@/components/Dashboard/TaskDialog';
 import DashboardContainer from '@/components/Dashboard/DashboardContainer';
-import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { useDashboardTasks } from '@/hooks/useDashboardTasks';
+import PerformanceChart from '@/components/Dashboard/PerformanceChart';
+import RecommendedActions from '@/components/Dashboard/RecommendedActions';
+import PendingTasksList from '@/components/Dashboard/PendingTasksList';
 
 const Dashboard = () => {
   const [showAddLeadDialog, setShowAddLeadDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('pipeline');
   const { refreshSubscriptionData } = useSubscription();
   const { activeFilters, handleFilterChange } = useFilterLeads();
   const { metrics, leadsCount, leadsLimit } = useDashboardMetrics();
@@ -26,10 +27,6 @@ const Dashboard = () => {
     completeTask, 
     deleteTask 
   } = useDashboardTasks();
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
 
   return (
     <DashboardContainer>
@@ -55,14 +52,24 @@ const Dashboard = () => {
         leadsLimit={leadsLimit} 
       />
       
-      <DashboardTabs
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        metrics={metrics}
-        tasks={tasks}
-        onOpenTaskDialog={() => setShowTaskDialog(true)}
-        onCompleteTask={completeTask}
-      />
+      {/* Performance Chart */}
+      <div className="mt-8">
+        <PerformanceChart />
+      </div>
+      
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RecommendedActions onOpenTaskDialog={() => setShowTaskDialog(true)} />
+        </div>
+        
+        <div>
+          <PendingTasksList 
+            tasks={tasks} 
+            onOpenTaskDialog={() => setShowTaskDialog(true)}
+            onCompleteTask={completeTask}
+          />
+        </div>
+      </div>
       
       {/* Task Dialog */}
       <TaskDialog 
