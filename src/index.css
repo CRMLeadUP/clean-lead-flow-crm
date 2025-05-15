@@ -111,8 +111,9 @@
   @apply text-foreground;
 }
 
+/* Fix the circular dependency by using the direct HSL value */
 .dark .bg-muted {
-  @apply bg-muted;
+  background-color: hsl(217 33% 17%);
 }
 
 /* Additional dark mode improvements */
