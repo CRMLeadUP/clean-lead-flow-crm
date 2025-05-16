@@ -34,12 +34,29 @@ const PipelineColumns: React.FC<PipelineColumnsProps> = ({
 }) => {
   const [stages, setStages] = useState(pipelineStages);
   
-  useEffect(() => {
+  const loadStages = () => {
     // Load custom stages from localStorage if available
     const savedStages = localStorage.getItem('pipelineStages');
     if (savedStages) {
       setStages(JSON.parse(savedStages));
+    } else {
+      setStages(pipelineStages);
     }
+  };
+  
+  useEffect(() => {
+    loadStages();
+    
+    // Listen for stages-updated event
+    const handleStagesUpdated = () => {
+      loadStages();
+    };
+    
+    window.addEventListener('stages-updated', handleStagesUpdated);
+    
+    return () => {
+      window.removeEventListener('stages-updated', handleStagesUpdated);
+    };
   }, []);
   
   return (

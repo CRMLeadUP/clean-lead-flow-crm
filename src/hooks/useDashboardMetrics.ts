@@ -17,20 +17,26 @@ export const useDashboardMetrics = () => {
     
     loadLeads();
     
-    // Set up a listener to reload leads when they change
+    // Set up a listener for both storage events and custom events
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'leads') {
         loadLeads();
       }
     };
     
+    const handleLeadsUpdated = () => {
+      loadLeads();
+    };
+    
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('leads-updated', handleLeadsUpdated);
     
     // Poll for changes every 5 seconds to ensure data is fresh
     const interval = setInterval(loadLeads, 5000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('leads-updated', handleLeadsUpdated);
       clearInterval(interval);
     };
   }, []);
@@ -56,9 +62,9 @@ export const useDashboardMetrics = () => {
     // Calculate total revenue from won deals
     const totalRevenue = leads
       .filter(lead => lead.stage === 'closed_won')
-      .reduce((sum, lead) => sum + (lead.expectedRevenue || 0), 0);
+      .reduce((sum, lead) => sum + (Number(lead.expectedRevenue) || 0), 0);
     
-    // Calculate conversion rate
+    // Calculate conversion rate - won deals divided by total leads
     const conversionRate = leads.length > 0 
       ? Math.round((closedDeals / leads.length) * 100) 
       : 0;

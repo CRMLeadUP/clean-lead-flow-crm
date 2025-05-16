@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users, BarChart2, CircleDollarSign, Percent, CheckSquare } from 'lucide-react';
+import { Users, BarChart2, CircleDollarSign, CheckSquare } from 'lucide-react';
 import MetricCard from './MetricCard';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 
@@ -24,14 +24,14 @@ const MetricsSection = ({ metrics, leadsCount, leadsLimit }: MetricsSectionProps
       <MetricCard
         title="Total de Leads"
         value={`${leadsCount}/${leadsLimit}`}
-        change="+12%"
+        change={metrics.newLeadsThisWeek > 0 ? `+${metrics.newLeadsThisWeek}` : "0"}
         icon={<Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
         iconBackground="bg-blue-100 dark:bg-blue-900/30"
       />
       <MetricCard
         title="Taxa de Conversão"
         value={formatPercentage(metrics.conversionRate)}
-        change="+3.2%"
+        change={metrics.conversionRate > 0 ? "+3.2%" : "0%"}
         icon={<BarChart2 className="h-6 w-6 text-green-600 dark:text-green-400" />}
         iconBackground="bg-green-100 dark:bg-green-900/30"
       />
@@ -45,7 +45,7 @@ const MetricsSection = ({ metrics, leadsCount, leadsLimit }: MetricsSectionProps
       <MetricCard
         title="Receita Gerada"
         value={formatCurrency(metrics.totalRevenue)}
-        change="+8.5%"
+        change={metrics.totalRevenue > 0 ? "+8.5%" : "0%"}
         icon={<CircleDollarSign className="h-6 w-6 text-purple-600 dark:text-purple-400" />}
         iconBackground="bg-purple-100 dark:bg-purple-900/30"
       />

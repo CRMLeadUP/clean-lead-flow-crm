@@ -15,13 +15,19 @@ interface EditStageDialogProps {
 const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange }) => {
   // Load stages from localStorage if available, otherwise use default pipelineStages
   const [stages, setStages] = useState<any[]>([]);
+  const [originalStages, setOriginalStages] = useState<any[]>([]);
   
   useEffect(() => {
-    const savedStages = localStorage.getItem('pipelineStages');
-    if (savedStages) {
-      setStages(JSON.parse(savedStages));
-    } else {
-      setStages([...pipelineStages]);
+    if (open) {
+      const savedStages = localStorage.getItem('pipelineStages');
+      if (savedStages) {
+        const parsedStages = JSON.parse(savedStages);
+        setStages(parsedStages);
+        setOriginalStages(JSON.parse(JSON.stringify(parsedStages))); // Deep copy
+      } else {
+        setStages([...pipelineStages]);
+        setOriginalStages([...pipelineStages]);
+      }
     }
   }, [open]);
   
@@ -75,41 +81,54 @@ const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange })
   };
   
   const handleSave = () => {
-    // Save to localStorage
-    localStorage.setItem('pipelineStages', JSON.stringify(stages));
-    
-    // Notify user
-    toast.success("Etapas do funil atualizadas com sucesso!");
-    
-    // Update all leads that might be affected by stage changes
-    const savedLeads = localStorage.getItem('leads');
-    if (savedLeads) {
-      const leads = JSON.parse(savedLeads);
+    try {
+      // Save to localStorage
+      localStorage.setItem('pipelineStages', JSON.stringify(stages));
       
-      // Get removed stage IDs
-      const currentStageIds = stages.map(stage => stage.id);
-      const existingStageIds = pipelineStages.map(stage => stage.id);
-      const removedStageIds = existingStageIds.filter(id => !currentStageIds.includes(id));
+      // Notify user
+      toast.success("Etapas do funil atualizadas com sucesso!");
       
-      // If any stage was removed, move leads to first stage
-      if (removedStageIds.length > 0 && stages.length > 0) {
-        const defaultStage = stages[0].id;
-        const updatedLeads = leads.map((lead: any) => {
-          if (removedStageIds.includes(lead.stage)) {
-            return { ...lead, stage: defaultStage };
-          }
-          return lead;
-        });
+      // Update all leads that might be affected by stage changes
+      const savedLeads = localStorage.getItem('leads');
+      if (savedLeads) {
+        const leads = JSON.parse(savedLeads);
         
-        localStorage.setItem('leads', JSON.stringify(updatedLeads));
+        // Get removed stage IDs
+        const currentStageIds = stages.map(stage => stage.id);
+        const originalStageIds = originalStages.map(stage => stage.id);
+        const removedStageIds = originalStageIds.filter(id => !currentStageIds.includes(id));
+        
+        // If any stage was removed, move leads to first stage
+        if (removedStageIds.length > 0 && stages.length > 0) {
+          const defaultStage = stages[0].id;
+          const updatedLeads = leads.map((lead: any) => {
+            if (removedStageIds.includes(lead.stage)) {
+              return { ...lead, stage: defaultStage };
+            }
+            return lead;
+          });
+          
+          localStorage.setItem('leads', JSON.stringify(updatedLeads));
+          
+          // Dispatch an event to notify components about lead updates
+          window.dispatchEvent(new CustomEvent('leads-updated'));
+        }
       }
+      
+      // Close the dialog
+      onOpenChange(false);
+      
+      // Force a refresh to update all components
+      window.dispatchEvent(new CustomEvent('stages-updated'));
+    } catch (error) {
+      console.error("Error saving stages:", error);
+      toast.error("Erro ao salvar etapas. Tente novamente.");
     }
-    
-    // Close the dialog
+  };
+  
+  const handleCancel = () => {
+    setStages(originalStages);
     onOpenChange(false);
-    
-    // Force page reload to apply changes
-    window.location.reload();
   };
   
   return (
@@ -174,7 +193,7 @@ const EditStageDialog: React.FC<EditStageDialogProps> = ({ open, onOpenChange })
           <div className="mt-6 flex justify-between">
             <Button 
               variant="outline" 
-              onClick={() => onOpenChange(false)}
+              onClick={handleCancel}
             >
               Cancelar
             </Button>

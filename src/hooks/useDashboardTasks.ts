@@ -8,10 +8,33 @@ export const useDashboardTasks = () => {
   
   // Load tasks when component mounts
   useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
-    }
+    const loadTasks = () => {
+      const savedTasks = localStorage.getItem('tasks');
+      if (savedTasks) {
+        setTasks(JSON.parse(savedTasks));
+      }
+    };
+    
+    loadTasks();
+    
+    // Listen for storage changes and custom event
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'tasks') {
+        loadTasks();
+      }
+    };
+    
+    const handleTasksUpdated = () => {
+      loadTasks();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('tasks-updated', handleTasksUpdated);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('tasks-updated', handleTasksUpdated);
+    };
   }, []);
   
   // Add a new task
@@ -33,9 +56,14 @@ export const useDashboardTasks = () => {
     const updatedTasks = [newTask, ...existingTasks];
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     
+    // Update state and notify other components
     setTasks(updatedTasks);
+    window.dispatchEvent(new CustomEvent('tasks-updated'));
+    
     setShowTaskDialog(false);
     toast.success('Tarefa criada com sucesso!');
+    
+    return newTask;
   };
   
   // Complete a task
@@ -46,6 +74,7 @@ export const useDashboardTasks = () => {
     
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     setTasks(updatedTasks);
+    window.dispatchEvent(new CustomEvent('tasks-updated'));
     toast.success('Tarefa marcada como concluída!');
   };
   
@@ -55,6 +84,7 @@ export const useDashboardTasks = () => {
     
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     setTasks(updatedTasks);
+    window.dispatchEvent(new CustomEvent('tasks-updated'));
     toast.success('Tarefa removida com sucesso!');
   };
   

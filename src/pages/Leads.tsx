@@ -23,18 +23,28 @@ const Leads = () => {
   
   // Load leads when component mounts
   useEffect(() => {
-    if (user) {
+    const loadLeads = () => {
+      if (user) {
+        const savedLeads = localStorage.getItem('leads');
+        if (savedLeads) {
+          setLeads(JSON.parse(savedLeads));
+        }
+      }
+    };
+    
+    loadLeads();
+    
+    // Listen for leads-updated event
+    const handleLeadsUpdated = () => {
       loadLeads();
-    }
+    };
+    
+    window.addEventListener('leads-updated', handleLeadsUpdated);
+    
+    return () => {
+      window.removeEventListener('leads-updated', handleLeadsUpdated);
+    };
   }, [user]);
-  
-  // Function to load leads from local storage
-  const loadLeads = () => {
-    const savedLeads = localStorage.getItem('leads');
-    if (savedLeads) {
-      setLeads(JSON.parse(savedLeads));
-    }
-  };
   
   const handleAddLead = (data: any) => {
     try {
@@ -53,10 +63,13 @@ const Leads = () => {
         lastContact: new Date().toISOString()
       };
       
-      // Add lead to local storage
+      // Add lead to local storage and update state
       const updatedLeads = [...leads, newLead];
       localStorage.setItem('leads', JSON.stringify(updatedLeads));
       setLeads(updatedLeads);
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new CustomEvent('leads-updated'));
       
       // Close dialog and refresh data
       setShowAddLeadDialog(false);

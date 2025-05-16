@@ -42,10 +42,13 @@ export const useLeadManagement = (
     }
   };
   
-  // Function to save leads to local storage
+  // Function to save leads to local storage and update global state
   const saveLeads = (updatedLeads: any[]) => {
     localStorage.setItem('leads', JSON.stringify(updatedLeads));
     setLeads(updatedLeads);
+    
+    // Dispatch a custom event to notify other components about lead updates
+    window.dispatchEvent(new CustomEvent('leads-updated'));
   };
 
   const handleAddLeadClick = (stageId: string) => {
@@ -89,9 +92,6 @@ export const useLeadManagement = (
       
       // Immediate feedback to user
       toast.success('Lead adicionado com sucesso!');
-      
-      // Force refresh of the component
-      loadLeads();
     } catch (error: any) {
       if (error.message && error.message.includes('cannot create more than')) {
         toast.error('Você atingiu seu limite de leads. Faça upgrade para o plano PRO.');
@@ -133,13 +133,7 @@ export const useLeadManagement = (
   };
 
   const handleCreateTask = (taskDetails: any) => {
-    toast.success('Tarefa criada com sucesso!');
-    
-    // Close the dialog
-    setShowTaskDialog(false);
-    
-    // Return task details with lead information
-    return {
+    const newTask = {
       ...taskDetails,
       leadId: currentLead?.id,
       leadName: currentLead?.name,
@@ -147,6 +141,20 @@ export const useLeadManagement = (
       completed: false,
       id: Date.now() // Use timestamp for unique ID
     };
+    
+    // Save the task to localStorage
+    const savedTasks = localStorage.getItem('tasks');
+    const tasks = savedTasks ? JSON.parse(savedTasks) : [];
+    const updatedTasks = [newTask, ...tasks];
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    
+    // Dispatch event to notify task components
+    window.dispatchEvent(new CustomEvent('tasks-updated'));
+    
+    toast.success('Tarefa criada com sucesso!');
+    setShowTaskDialog(false);
+    
+    return newTask;
   };
 
   // Instead of directly returning JSX, return a function that renders the component

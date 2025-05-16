@@ -15,7 +15,10 @@ const PerformanceChart = () => {
       <CardContent>
         <div className="h-[240px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={metrics.weeklyPerformance} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+            <BarChart 
+              data={metrics.weeklyPerformance} 
+              margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis fontSize={12} tickLine={false} axisLine={false} />
